@@ -7,18 +7,38 @@ sys.setdefaultencoding("utf-8")
 if __name__ == '__main__':
     pass
 
-#合成各类别新闻的概率向量
-classVec=[3,4,2,1,3,2]
-array_classVec=array(classVec)
-class_p_list=[]
-for i in unique(classVec):
-    print i
-    p=sum(array([w/i for w in array_classVec if w==i]))/float(len(classVec))
-    print 'the p of class+"i" is %f:' %p
-    class_p_list.append(p)
-    array_class_p_list=array(class_p_list)
-print array_class_p_list
+#合成各类别新闻的先验概率向量
+def classVec2classpList(classVec):
+    from numpy import *
+    '''类别标签向量转换为各类别比例函数：多类时，利用
+    文本的类别类别计算各类所占概率，类别标签列表，如：classVec=[3,4,2,1,3,2]'''
+    array_classVec=array(classVec)
+    class_p_list=[]
+    for i in unique(classVec):
+        p=sum(array([w/i for w in array_classVec if w==i]))/float(len(classVec))
+        # print 'the p of class+"i" is %f:' %p
+        class_p_list.append(p)
+        array_class_p_list=array(class_p_list)
+    return array_class_p_list
 
+#各类别中后验概率向量转换为多向量列表
+def pClassV2pClassVList(pClassV):
+    '''将多类别条件概率向量如p0V，p1V依次加入pClassVList，组成多向量列表'''
+    from numpy import *
+    pClassVList=[]
+    pClassVList.append(pClassV)
+    return pClassVList
+
+
+# from numpy import *
+# classVec=[3,4,2,1,3,2]
+# array_classVec=array([float(i) for i in classVec])
+# print array_classVec
+# class_item_vec=[]
+# for t in range(4):
+#     class_item_vec.append(array_classVec)
+# print class_item_vec
+# print class_item_vec[0]*class_item_vec[0]
 
 
 def LoadDataSet():
@@ -36,6 +56,7 @@ def LoadDataSet():
                  ['quit','buying','worthless','dog','food','stupid']]
     classVec=[0,1,2,1,0,2]
     return postingList,classVec
+
 
 def createVocabList(dataSet):
     '''词库创建函数，用于利用输入的文本生成词库集，原则上包含所有在所有的文本中出现过的词（每个词出现一次的词集）
