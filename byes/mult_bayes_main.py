@@ -2,6 +2,7 @@
 # -- coding: utf-8 --
 import jieba
 import bayes
+import bayes_multiple_class
 import random
 from numpy import *
 
@@ -38,12 +39,12 @@ def get_doc_list():
     分别获取矩阵，类别，词的链表
     :return:
     """
-    file_neg = 'D://myfile/spider_output/article_neg.neg'
-    file_pos = 'D://myfile/spider_output/article_pos.pos'
+    file_1 = 'D://myfile/spider_output/article_neg.neg'    #类别1
+    file_2 = 'D://myfile/spider_output/article_pos.pos'
 
     # 分别返回正面和负面新闻的分词结果以及类别
-    seg_list_neg, class_list_neg = outstop_cut_toline(file_neg, True)  # 负面
-    seg_list_pos, class_list_pos = outstop_cut_toline(file_pos, False)  # 正面
+    seg_list_neg, class_list_neg = outstop_cut_toline(file_1, 1)  # 负面
+    seg_list_pos, class_list_pos = outstop_cut_toline(file_2, 2)  # 正面
 
     # 汇总返回结果
     doc_list = seg_list_neg + seg_list_pos  # 矩阵
@@ -61,7 +62,7 @@ def main():
     :return:
     """
     doc_list, class_list, full_list = get_doc_list()
-    vocab_list = bayes.createVocabList(doc_list)
+    vocab_list = bayes_multiple_class.createVocabList(doc_list)
     # print vocab_list
     with open("D://myfile/spider_output/vocablist","w") as vocfw:
         vocfw.write("\x01".join(vocab_list))
@@ -75,21 +76,21 @@ def main():
     train_Mat = []
     train_classes = []
     # 训练阶段
-    with open("D://myfile/spider_output/p0","w") as p0fw,open("D://myfile/spider_output/p1","w") as p1fw:
+    with open("D://myfile/spider_output/pVect_array","w") as fw_pVect_array,open("D://myfile/spider_output/array_class_p_list","w") as fw_pList:
         for doc_index in training_set:
-            train_Mat.append(bayes.bagOfWords2VecMN(vocab_list, doc_list[doc_index]))
+            train_Mat.append(bayes_multiple_class.bagOfWords2Vec(vocab_list, doc_list[doc_index]))
             train_classes.append(class_list[doc_index])
-        p0V, p1V, pNeg = bayes.trainNB0(array(train_Mat), array(train_classes))
-        print "p0V is :",p0V
-        p0fw.write("\x01".join(str(i) for i in p0V))
-        print "p1V is :",p1V
-        p1fw.write("\x01".join(str(i) for i in p1V))
-        print "pNeg is :",pNeg
+        pVect_array, array_class_p_list=bayes_multiple_class.trainNBO(array(train_Mat), array(train_classes))
+
+        fw_pVect_array.write("\x01".join(str(i) for i in pVect_array,))
+
+        fw_pList.write("\x01".join(str(i) for i in array_class_p_list))
+
         error_Count = 0
     # 测试阶段
     for doc_index in test_set:
-        wordVector = bayes.bagOfWords2VecMN(vocab_list, doc_list[doc_index])
-        if bayes.classifyNB(array(wordVector), p0V, p1V, pNeg) != class_list[doc_index]:
+        wordVector = bayes_multiple_class.bagOfWords2Vec(vocab_list, doc_list[doc_index])
+        if bayes_multiple_class.classifyNB(array(wordVector), pVect_array, array_class_p_list, unique(class_list)) != class_list[doc_index]:
             error_Count += 1
     print "the error rate is:", float(error_Count) / len(test_set)
 
