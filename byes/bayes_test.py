@@ -27,7 +27,7 @@ def rdfile2list(file_to_array):
 #将一行字符串分词为不带停用词的词列表
 def strline_cut_outstop(strLine):
     import jieba
-    stop = [line.strip().decode('utf-8') for line in open("D://myfile/stopw.txt").readlines()]
+    stop = [line.strip().decode('utf-8') for line in open("stopw.txt").readlines()]
     strLine.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
     seg_list = jieba.cut(strLine, cut_all=False)
     seg_list_outstop = [w for w in seg_list if w not in stop]

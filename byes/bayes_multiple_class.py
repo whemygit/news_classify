@@ -112,7 +112,7 @@ def testingNB():
     for postinDoc in listOPosts:
         trainMat.append(bagOfWords2Vec(myVocabList,postinDoc))
         pVect_array, array_class_p_list=trainNBO(array(trainMat),array(listClasses))
-    testEntry=['stop','posting','stupid','worthless','garbage']
+    testEntry=['quit','buying','worthless','dog','food','stupid']
     thisDoc=array(bagOfWords2Vec(myVocabList,testEntry))
     print testEntry,'classified as :',classifyNB(thisDoc,pVect_array, array_class_p_list,unique(listClasses))
 
