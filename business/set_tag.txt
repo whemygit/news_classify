@@ -1,0 +1,13 @@
+%pid=5，环境服务，两项
+%pid=4，无其他项
+%pid=6，无其他
+SELECT count(*) FROM business_opportunity_1;
+DELETE FROM business_opportunity_1 WHERE bid IN (SELECT m_bid FROM (SELECT max(bid) as m_bid,count(title) as count_t from business_opportunity_1 GROUP BY title HAVING count_t>1 ORDER BY bid ASC) as tab);
+UPDATE business_opportunity_1 SET businessPid=5;
+UPDATE business_opportunity_1 SET businessPid=1, businessId=10 WHERE title LIKE ‘%银行%’; 
+UPDATE business_opportunity_1 SET businessPid=1, businessId='f210ca0c-8dbd-480f-b2df-fbc2f8f99993' WHERE title LIKE ‘%支付%’; 
+UPDATE business_opportunity_1 SET businessPid=2 WHERE title LIKE ‘%农%’; 
+UPDATE business_opportunity_1 SET businessPid=2, businessId='20' WHERE title LIKE ‘%农林牧渔%’; 
+UPDATE business_opportunity_1 SET businessPid=2, businessId='21' WHERE title LIKE ‘%农业加工%’; 
+UPDATE business_opportunity_1 SET businessPid=2, businessId='22' WHERE title LIKE ‘%农副产品加工%’; 
+UPDATE business_opportunity_1 SET businessPid=2, businessId='b80d6348-0436-4242-8091-b45f0da7772b' WHERE title LIKE ‘%支付%’; 
