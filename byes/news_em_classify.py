@@ -31,7 +31,7 @@ def mysql_connect():
 
 def em_classify():
     db = mysql_connect()
-    id_select = 'SELECT newsid FROM news_data;'
+    id_select = 'SELECT newsid FROM news_data where em_teg=2;'
     newsid_list = db.query(id_select)
     for i in range(len(newsid_list)):
         sql='select * from news_data where newsid='+str(newsid_list[i].get('newsid'))
