@@ -46,5 +46,5 @@ def get_prod_params():
     db.close()
 
 if __name__ == '__main__':
-    # prod_Duplicate_rm()                                      #去重
-    get_prod_params()                                        #获取商品参数
+    prod_Duplicate_rm()                                      #去重
+    # get_prod_params()                                        #获取商品参数

@@ -4,7 +4,6 @@ import sys
 import torndb
 import mysql_connect
 
-
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -35,10 +34,10 @@ def comp_class_get(company):
     db.close()
 
 
-def get_company(table_set):
-    '''选择要设置标签的数据库表，返回设置标签时所要依据的字段列表'''
-    db=mysql_connect.mysql_connect()
-    select_sql='SELECT title FROM '+table_set
+def comp_list_get():
+    '''关联字段序列获取函数'''
+    db = mysql_connect.mysql_connect()
+    select_sql='SELECT title FROM company'
     print select_sql
     select_res=db.query(select_sql)
     comp_list=[]
@@ -49,10 +48,14 @@ def get_company(table_set):
     return comp_list
     db.close()
 
+def class_set():
+    db=mysql_connect.mysql_connect()
+    comp_list=comp_list_get()
+    for comp in comp_list:
+        classPid=comp_class_get(comp)
+        update_sql = 'UPDATE product SET classPid=' + str(classPid) + ' WHERE companyName=' + '\'' + comp + '\''+' and classPid=4'
+        db.execute(update_sql)
+    db.close()
 
 if __name__ == '__main__':
-    #通过company的分类为product表的classPid标签设置值
-    for comp in get_company('product'):
-        classPid=comp_class_get(comp)
-        update_sql='UPDATE product SET classPid='+str(classPid)+' WHERE companyName='+'\''+comp+'\''
-    # get_company()
+    class_set()
