@@ -22,14 +22,16 @@ def mysql_connect():
 # 297个城市列表
 def define_city_list():
     with open('city_list', 'r') as fr:
-        city_list = fr.readlines()
-        print 'len(city_list):' + str(len(city_list))
+        city_list_1 = fr.readlines()
+        city_list=[]
+        print 'len(city_list):' + str(len(city_list_1))
+        for city in city_list_1:
+            city_list.append(city.strip())                                      #去掉\n,very important!!!!!!!!!!!!!
     return city_list
 
 def rec_newsid_select(city):
     db=mysql_connect()
     pos_news_select='SELECT * FROM news_data WHERE area LIKE \'%%{s}%%\' AND em_teg=0 ORDER BY news_date DESC LIMIT 7;'.format(s=city)
-    # pos_news_select=pos_news_select.replace('%','%%')
     pos_news_res=db.query(pos_news_select)
     pos_newsid_list=[]
     for news_select in pos_news_res:
@@ -50,12 +52,11 @@ def rec_news_select(city):
     return pos_news_list
     db.close()
 
-pos_newsid_list=rec_news_select()
-db=mysql_connect()
-sql='SELECT * FROM news_data WHERE newsid not in ', pos_newsid_list
+
 
 if __name__ == '__main__':
-    # define_city_list()
-    # rec_newsid_select('北京')
-    rec_news_select('北京')
-    # rec_news_select(3394)
+    #各市推荐news的newsid
+    city_list=define_city_list()
+    for city in city_list:
+        rec_newsid_select(city)
+

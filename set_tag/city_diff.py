@@ -6,13 +6,25 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 #297个城市列表
+# def define_city_list():
+#     with open('D://myfile/city_list','r') as fr:
+#         city_list= fr.readlines()
+#         print 'len(city_list):'+str(len(city_list))
+#         # for city in city_list:
+#         #     print city.strip()
+#     return city_list
+
+# 297个城市列表
 def define_city_list():
-    with open('D://myfile/city_list','r') as fr:
-        city_list= fr.readlines()
-        print 'len(city_list):'+str(len(city_list))
-        # for city in city_list:
-        #     print city.strip()
+    with open('D://myfile/city_list', 'r') as fr:
+        city_list_1 = fr.readlines()
+        city_list=[]
+        print 'len(city_list):' + str(len(city_list_1))
+        for city in city_list_1:
+            city_list.append(city.strip())                                      #去掉\n,very important!!!!!!!!!!!!!
     return city_list
+
+
 
 
 #新闻城市列表
@@ -46,7 +58,7 @@ def bo_city_list_get():
     return bo_city_list
     db.close()
 
-#bo城市列表
+#prod城市列表
 def prod_city_list_get():
     '''关联字段序列获取函数'''
     db = mysql_connect.mysql_connect()
@@ -62,7 +74,7 @@ def prod_city_list_get():
     db.close()
 
 
-#bo城市列表
+#comp城市列表
 def comp_city_list_get():
     '''关联字段序列获取函数'''
     db = mysql_connect.mysql_connect()
@@ -83,25 +95,7 @@ if __name__ == '__main__':
     bo_city_list=bo_city_list_get()
     prod_city_list=prod_city_list_get()
     comp_city_list=comp_city_list_get()
-    # prod_city_list1 = []
-    # for city in prod_city_list:
-    #     prod_city_list1.append(city)
-    # print prod_city_list1
-    # print prod_city_list1==prod_city_list
-
-
-    #
-    # news_no_city=[city for city in city_list if city not in comp_city_list]
-    # print 'len(news_no_city):'+str(len(news_no_city))
-    # for city in news_no_city:
-    #     print city.strip()
-
-    # bo_no_city=[city for city in city_list if city not in bo_city_list]
-    # print 'len(bo_no_city):'+str(len(bo_no_city))
-    # for city in bo_no_city:
-    #     print city.strip()
-    #
-    # prod_no_city = [city for city in city_list if city not in prod_city_list]
-    # print 'len(prod_no_city):' + str(len(prod_no_city))
-    # for city in prod_no_city:
-    #     print city.strip()
+    # 包含在定义列表中，但news列表中不包含的城市列表
+    news_no=[city for city in city_list if city not in news_city_list]
+    for city in news_no:
+        print city
