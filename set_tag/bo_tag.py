@@ -38,7 +38,6 @@ def bo_tag_set():
                 update_sql=line.strip('\n')
                 print update_sql
                 db.execute(update_sql)
-
     db.close()
 
 if __name__ == '__main__':

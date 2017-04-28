@@ -69,4 +69,3 @@ if __name__ == '__main__':
     #         print rec_prodid_select(i)
     #         print rand_prodid
     rec_prod_select()
-
