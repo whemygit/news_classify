@@ -1,0 +1,101 @@
+
+UPDATE business_opportunity_1 SET businessPid=5 WHERE businessPid IS NULL;
+
+UPDATE business_opportunity_1 SET businessPid=1, businessId=10 WHERE title LIKE '%%银行%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessPid=1, businessId='f210ca0c-8dbd-480f-b2df-fbc2f8f99993' WHERE title LIKE '%%支付%%' AND businessId IS NULL; 
+
+UPDATE business_opportunity_1 SET businessPid=2 WHERE title LIKE '%%农%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='20' WHERE title LIKE '%%农林牧渔%%' AND businessPid=2 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='21' WHERE title LIKE '%%农业加工%%' AND businessPid=2 AND businessId IS NULL; 
+UPDATE business_opportunity_1 SET businessId='22' WHERE title LIKE '%%农副产品加工%%' AND businessPid=2 AND businessId IS NULL; 
+UPDATE business_opportunity_1 SET businessId='b80d6348-0436-4242-8091-b45f0da7772b' WHERE businessPid=2 and businessId IS NULL; 
+
+UPDATE business_opportunity_1 SET businessPid=3 WHERE title LIKE '%%城镇%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='0eea9968-036e-4bbf-b806-e645e55ad629' WHERE title LIKE '%%广告%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='30' WHERE title LIKE '%%水利%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='31' WHERE title LIKE '%%桥梁%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='32' WHERE title LIKE '%%房产建筑%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='33' WHERE title LIKE '%%道路%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='34' WHERE title LIKE '%%园林绿化%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='37b35408-10ef-40b9-88a4-031667dcc6c2' WHERE title LIKE '%%维修工程%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='6fb1c2a5-8a03-4dd1-8e21-b6be610d1919' WHERE title LIKE '%%工程采购%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='764374cc-6451-4b6c-b154-b729937f271f' WHERE title LIKE '%%学校绿化%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='76453581-f5ec-40df-a7e8-a299c70bf561' WHERE title LIKE '%%机械工程%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='99b92033-d85f-487a-b82b-ef7a4dee3690' WHERE title LIKE '%%地坑%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='b19ee826-f5bb-4bb2-b269-0407454092af' WHERE title LIKE '%%数据采购%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='ca75a186-62aa-4887-81d2-57f85f5ac54e' WHERE title LIKE '%%物业%%' AND businessPid=3 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='0eea9968-036e-4bbf-b806-e645e55ad629' WHERE businessPid=3 and businessId IS NULL; 
+
+UPDATE business_opportunity_1 SET businessPid=4 WHERE title LIKE '%%工业%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='41' WHERE title LIKE '%%电力%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='42' WHERE title LIKE '%%交通运输%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='43' WHERE title LIKE '%%电子电器%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='44' WHERE title LIKE '%%能源化工%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='5d39de71-0059-497f-a399-c7220c47acb1' WHERE title LIKE '%%冶金%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='bd9001fe-4053-479b-b48e-940b77100d66' WHERE title LIKE '%%食品%%' AND businessPid=4 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='41' WHERE businessPid=4 and businessId IS NULL;
+
+UPDATE business_opportunity_1 SET businessPid=6 WHERE title LIKE '%%文化%%' AND title LIKE '%%旅游%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='1543318d-7028-4b84-a1da-0b1415e75086' WHERE title LIKE '%%文化场所%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='2a2dba79-e1ed-4391-90cd-327be2e85bed' WHERE title LIKE '%%文化旅游%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='42145de1-0830-40e7-8df9-332234b3ca25' WHERE title LIKE '%%媒介%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='5f32299b-3aa6-423e-a84b-7eef9ae2dbf8' WHERE title LIKE '%%院线%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='69c5250b-6c8f-4691-81ce-d6b83e35a04a' WHERE title LIKE '%%旅游地产%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='b4a04f1d-75ad-4140-b28e-84b53f41eb42' WHERE title LIKE '%%影视%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='bd51611c-deb3-42c2-a868-1191a3ededc3' WHERE title LIKE '%%景区%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f8dce3a8-79c6-4c90-bc06-26b9b62316bf' WHERE title LIKE '%%出版%%' AND businessPid=6 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='1543318d-7028-4b84-a1da-0b1415e75086' WHERE businessPid=6 and businessId IS NULL;
+
+
+UPDATE business_opportunity_1 SET businessPid=7 WHERE title LIKE '%%互联网%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='1e96a6a5-a181-4c6e-ad7f-18fc3525ba54' WHERE title LIKE '%%信息%%' AND businessPid=7 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='491e9b52-0055-433f-b838-3d48c3af1c92' WHERE title LIKE '%%网络通讯%%' AND businessPid=7 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='976657bc-b467-462c-b0c9-7dd53370e4d3' WHERE title LIKE '%%大数据%%' AND businessPid=7 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='b49f1609-a5b4-4ed3-81e5-45adcb866d2e' WHERE title LIKE '%%视频建设%%' AND businessPid=7 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='dcc8b63c-6e72-4ca8-bcdc-4ea8275c3c08' WHERE businessPid=7 and businessId IS NULL;
+
+
+UPDATE business_opportunity_1 SET businessPid=8 WHERE title LIKE '%%环保%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='0995f576-cb8c-4b0a-afb1-7d967471037b' WHERE title LIKE '%%检测系统%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='515b73db-1db1-4224-895d-fd696b132e81' WHERE title LIKE '%%水处理%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='6f07a04c-ac2f-4425-b820-f0b9eaa0e34d' WHERE title LIKE '%%污水%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='a1bfcdda-cb5f-4d87-a8dd-a50611f4415f' WHERE title LIKE '%%环卫管理%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='abbff63e-2fd2-4f91-a06b-0b27307f4ae8' WHERE title LIKE '%%暗管%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='ba19abe1-a337-48fc-ae32-a0077e589a0a' WHERE title LIKE '%%市政%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='ccaf7285-8879-42d9-b4e6-5355e395b9b0' WHERE title LIKE '%%垃圾%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='e7ae2357-8522-4511-aae6-b4d3148bce57' WHERE title LIKE '%%绿化%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f4011b3f-0ffc-4289-b31c-6caf5c54a24d' WHERE title LIKE '%%垃圾容器%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f892b8d6-b073-41bc-8fdc-b94cf7f484a1' WHERE title LIKE '%%环保工程%%' AND businessPid=8 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f892b8d6-b073-41bc-8fdc-b94cf7f484a1' WHERE businessPid=8 and businessId IS NULL;
+
+
+UPDATE business_opportunity_1 SET businessPid=9 WHERE title LIKE '%%土地%%' AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='24b9aaee-b1f5-48a9-a429-bf6618eecad7' WHERE title LIKE '%%住宅%%' AND businessPid=9 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='2d445213-9e5e-4e78-a230-6239f23fe23a' WHERE title LIKE '%%商用%%' AND businessPid=9 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='2dac88d3-97ea-4210-8c93-07e1f0467af5' WHERE title LIKE '%%工业%%' AND businessPid=9 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='24b9aaee-b1f5-48a9-a429-bf6618eecad7' WHERE businessPid=9 and businessId IS NULL;
+
+
+UPDATE business_opportunity_1 SET businessId='1701031141397580106' WHERE title LIKE '%%设备采购%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='1701031141397580157' WHERE title LIKE '%%专用设备%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='1701040424424360000' WHERE title LIKE '%%装备采购%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='32409a40-ee19-48e6-902d-f3d58ae35e87' WHERE title LIKE '%%专业技术服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='354ea146-86d2-4513-89dd-e579e00f6419' WHERE title LIKE '%%租赁服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='3a15f9ba-efa5-458a-98ed-ec976cb5552c' WHERE title LIKE '%%电信%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='50' WHERE title LIKE '%%商业服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='51' WHERE title LIKE '%%医疗卫生%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='52' WHERE title LIKE '%%教育%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='522cd30c-1ff2-4e32-bcc6-dd1b39276f14' WHERE title LIKE '%%服务外包%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='5b765a57-cdd5-4e5b-8789-18253b58c951' WHERE title LIKE '%%公共设施管理服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='836e7df9-e22f-4af4-980d-f30486afe8b3' WHERE title LIKE '%%环境服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='8f6416a3-0099-4e53-970a-d9fbd653edff' WHERE title LIKE '%%房地产服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='b5b1793f-f3cf-4398-8f03-a91c5a340ade' WHERE title LIKE '%%交通运输和仓储服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='b9282bad-ce50-492c-b3f8-654400ff94a3' WHERE title LIKE '%%安全监测服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='ba125007-c6b8-44a5-be15-3965ce64ce8c' WHERE title LIKE '%%维修和保养服务%%' AND businessPid=5 AND businessId IS NULL AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='df31359a-de8b-4b3a-bdf1-6709092dfd67' WHERE title LIKE '%%改建装修%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='e3155a74-f26f-4b23-b806-805e8ac7a8fc' WHERE title LIKE '%%学校%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='e9d6fcf7-d935-41a6-b18e-650e4a4554cb' WHERE title LIKE '%%地质勘测服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f3ac7a62-cfcf-4ee5-833d-639f5cc34aa2' WHERE title LIKE '%%信息技术服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='f4a91dd8-a8f5-426f-aa95-be62b1ac0605' WHERE title LIKE '%%医疗采购%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='fcf417a4-b748-4310-95b0-e55185f68839' WHERE title LIKE '%%工程咨询管理服务%%' AND businessPid=5 AND businessId IS NULL;
+UPDATE business_opportunity_1 SET businessId='214e2b0f-1615-4251-93e7-0e586df5d082' WHERE businessPid=5 and businessId IS NULL;
