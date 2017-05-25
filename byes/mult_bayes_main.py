@@ -82,7 +82,7 @@ def main():
             train_classes.append(class_list[doc_index])
         pVect_array, array_class_p_list=bayes_multiple_class.trainNBO(array(train_Mat), array(train_classes))
 
-        fw_pVect_array.write("\x01".join(str(i) for i in pVect_array,))
+        fw_pVect_array.write("\x01".join(str(i) for i in pVect_array+'\n'))
 
         fw_pList.write("\x01".join(str(i) for i in array_class_p_list))
 

@@ -79,7 +79,7 @@ def trainNBO(trainMatrix,trainCategory):
     Denom=np.ones(len(unique(trainCategory)))+1
     pVect_array=np.zeros(shape(class_word_Num))
     for i in range(numTrainDocs):
-        for j in unique(trainCategory):
+        for j in unique(trainCategory):                          #唯一值列表
             if trainCategory[i] == j:
                 class_word_Num[j-1]+=trainMatrix[i]
                 Denom[j-1]+=sum(trainMatrix[i])

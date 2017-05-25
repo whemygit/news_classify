@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -- coding: utf-8 --
 import sys
-
+import os
+import numpy as np
+from numpy import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -14,6 +16,34 @@ def rdfile2array(file_to_array):
         a = afr.read()
         p_array = numpy.array([float(w) for w in a.split("\x01")])
     return p_array
+
+#将读取的文本转换为矩阵
+def file2matrix(filename):
+    with open(filename, 'r') as fr:
+        lines = fr.readlines()
+        numOfLines = len(lines)
+        eachline_len = len(lines[0].strip().split('\x01'))
+        returnMat = zeros((numOfLines, eachline_len))
+        index = 0
+        for line in lines:
+            line = line.strip()
+            listFromLine = line.split('\t')
+            returnMat[index, :] = listFromLine
+            index += 1
+    return returnMat
+
+# with open('D://myfile/machine_learning_code/machinelearninginaction/Ch02/datingTestSet2.txt','r') as fr:
+#     lines=fr.readlines()
+#     numOfLines=len(lines)
+#     eachline_len=len(lines[0].strip().split('\t'))
+#     returnMat=zeros((numOfLines,eachline_len))
+#     index=0
+#     for line in lines:
+#         line=line.strip()
+#         listFromLine=line.split('\t')
+#         returnMat[index,:]=listFromLine
+#         index+=1
+#     print returnMat[1]
 
 
 # 将读取的文本转换为列表
@@ -53,5 +83,14 @@ def main(infile_name,class1_file,class0_file):
                 f0.write(lines[line_index])
 
 
-if __name__ == '__main__':
-    main('D://myfile/bayestest/news_from_json','D://myfile/bayestest/sample_class1','D://myfile/bayestest/sample_class0')
+# if __name__ == '__main__':
+#     main('D://myfile/bayestest/news_from_json','D://myfile/bayestest/sample_class1','D://myfile/bayestest/sample_class0')
+print [2]*5      #类别列表
+
+#遍历文件夹下的所有文件
+s=os.sep
+root='D://myfile'
+
+for i in os.listdir(root):
+    print i
+    print type(i)
