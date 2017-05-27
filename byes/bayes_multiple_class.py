@@ -75,8 +75,8 @@ def trainNBO(trainMatrix,trainCategory):
     numTrainDocs=len(trainMatrix)
     numWords=len(trainMatrix[0])
     array_class_p_list=classVec2classpList(trainCategory)
-    class_word_Num = np.ones((len(unique(trainCategory)),numWords))
-    Denom=np.ones(len(unique(trainCategory)))+1
+    class_word_Num = np.ones((len(unique(trainCategory)),numWords))     #每个类别下词汇表中各词数量矩阵初始化值
+    Denom=np.ones(len(unique(trainCategory)))+len(unique(trainCategory))-1   #每个类别下词总数向量初始化值
     pVect_array=np.zeros(shape(class_word_Num))
     for i in range(numTrainDocs):
         for j in unique(trainCategory):                          #唯一值列表
@@ -116,7 +116,7 @@ def testingNB():
     thisDoc=array(bagOfWords2Vec(myVocabList,testEntry))
     print testEntry,'classified as :',classifyNB(thisDoc,pVect_array, array_class_p_list,unique(listClasses))
 
-testingNB()
+# testingNB()
 
 # def textParse(bigString):
 #     import re
