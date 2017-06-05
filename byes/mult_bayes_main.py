@@ -7,6 +7,7 @@ import bayes_multiple_class
 import random
 from numpy import *
 
+
 import sys
 
 reload(sys)
@@ -18,7 +19,7 @@ def outstop_cut_toline(filename):
     返回分词后的新闻矩阵
     :param filename: 输入文件路径
     """
-    with open(filename, "r") as fr, open("D://myfile/stopw.txt", "r") as frs:
+    with open(filename, "r") as fr, open("stopw.txt", "r") as frs:
         lines = fr.readlines()
         stop = [line.strip().decode('utf-8') for line in frs.readlines()]
         seg_list_outstop = []
@@ -43,8 +44,8 @@ def get_doc_list():
     for i in os.listdir(root):
         print len(os.listdir(root))
         print i
-        print type(i)
-        with open(root+'/' + i, 'r') as fr, open("D://myfile/stopw.txt", "r") as frs:
+        # print type(i)
+        with open(root+'/' + i, 'r') as fr, open("stopw.txt", "r") as frs:
             stop = [line.strip().decode('utf-8') for line in frs.readlines()]
             lines = fr.readlines()
             _class_list = [index] * len(lines)
@@ -55,6 +56,9 @@ def get_doc_list():
         class_list.extend(_class_list)
         index += 1
     return doc_list,class_list
+
+#读取文件按首字母排序
+doc_label={'business':'1','chihe':'2','it':'3','learning':'4'}
 
 # root='D://myfile/test'
 # index=1
@@ -121,8 +125,9 @@ def main():
 
 
 if __name__ == '__main__':
-    doc_list, class_list = get_doc_list()
-    print class_list
-    print len(doc_list)
+    main()
+    # doc_list, class_list = get_doc_list()
+    # print class_list
+    # print len(doc_list)
 
 

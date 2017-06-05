@@ -1,31 +1,14 @@
 #!/usr/bin/env python
 # -- coding: utf-8 --
 import sys
+import jieba
+from numpy import *
+import numpy as np
+import random
+import os
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
-if __name__ == '__main__':
-    pass
-
-
-from numpy import *
-import numpy as np
-
-def LoadDataSet():
-    '''数据加载函数，主要用于演示样例所用，说明建立模型所需要的基础数据格式
-    输入：文本列表组成的列表，各文本所属类型的向量，两类别用0,1表示
-    输出:同输入'''
-    postingList=[['my','dog','has','flea',
-                  'problems','help','please'],
-                 ['maybe','not','take','him',
-                  'to','dog','park','stupid'],
-                 ['my','dalmation','is','so','cute',
-                  'I','love','him'],
-                 ['stop','posting','stupid','worthless','garbage'],
-                 ['mr','licks','ate','my','steak','how','to','stop','him'],
-                 ['quit','buying','worthless','dog','food','stupid']]
-    classVec=[1,3,2,3,1,4]
-    return postingList,classVec
 
 
 def createVocabList(dataSet):
@@ -106,50 +89,76 @@ def classifyNB(vec2Classify,pVect_array,array_class_p_list,Category):
     return classify_result
 
 
-def testingNB():
-    '''测试函数'''
-    listOPosts,listClasses=LoadDataSet()
-    myVocabList=createVocabList(listOPosts)
-    trainMat=[]
-    for postinDoc in listOPosts:
-        trainMat.append(bagOfWords2Vec(myVocabList,postinDoc))
-        pVect_array, array_class_p_list=trainNBO(array(trainMat),array(listClasses))
-    testEntry=['quit','buying','worthless','dog','food','stupid']
-    thisDoc=array(bagOfWords2Vec(myVocabList,testEntry))
-    print testEntry,'classified as :',classifyNB(thisDoc,pVect_array, array_class_p_list,unique(listClasses))
 
-# testingNB()
+def get_doc_list():
+    """
+    分别获取分词后文档矩阵，类别列表
+    :input:多类别文本文档所在的路径
+    output：doc_lisr,class_list
+    """
+    root = 'D://myfile/multclasscorpus'
+    print root+'/'
+    index = 1
+    class_list = []
+    doc_list = []
+    for i in os.listdir(root):
+        print len(os.listdir(root))
+        print i
+        # print type(i)
+        with open(root+'/' + i, 'r') as fr, open("stopw.txt", "r") as frs:
+            stop = [line.strip().decode('utf-8') for line in frs.readlines()]
+            lines = fr.readlines()
+            _class_list = [index] * len(lines)
+            for line in lines:
+                line=line.replace(r'\t', '').replace(r'\n', '').replace(r' ', '').replace(r'，', '').strip()
+                seg_list = jieba.cut(line, cut_all=False)
+                doc_list.append([w for w in seg_list if w not in stop])
+        class_list.extend(_class_list)
+        index += 1
+    return doc_list,class_list
 
-# def textParse(bigString):
-#     import re
-#     listOfTokens=re.split(r'w*',bigString)
-#     return [tok.lower() for tok in listOfTokens if len(tok)>2]
-#
-# def spamTest():
-#     docList=[];classList=[];fullText=[]
-#     for i in range(1,26):                          #读取样本
-#         wordList=textParse(open('aa%d'%i).read())
-#         docList.append(wordList)
-#         fullText.extend(wordList)
-#         classList.append(1)
-#         wordList = textParse(open('aa%d'%i).read())
-#         docList.append(wordList)
-#         fullText.extend(wordList)
-#         classList.append(0)
-#     vocabList=createVocabList(docList)              #生成词库
-#     trainingSet=range(50);testSet=[]                #训练集和测试集序号
-#     for i in range(10):
-#         randIndex=int(random.uniform(0,len(trainingSet)))     #随机序列号
-#         testSet.append(trainingSet[randIndex])                #随机序列加入测试集
-#         del(trainingSet[randIndex])                           #同时将测试集中对应序列号删除
-#     trainMat=[];trainClasses=[]
-#     for docIndex in trainingSet:                              #根据对应序列生成训练集及类别向量
-#         trainMat.append(bagOfWords2Vec(vocabList,docList[docIndex]))
-#         trainClasses.append(classList[docIndex])
-#     p0V,p1V,pSpam=trainNBO(trainMat,trainClasses)              #训练模型
-#     errorCount=0
-#     for docIndex in testSet:                                   #逐条测试测试集，测试结果与实际不符中错误数+1
-#         wordVector=bagOfWords2Vec(vocabList,docList[docIndex])
-#         if classifyNB(array(wordVector),p0V,p1V,pSpam)!=classList[docIndex]:
-#             errorCount+=1
-#     print 'the error rate is:',float(errorCount)/len(testSet)   #输出错误率
+# #读取文件按首字母排序
+# doc_label={'business':'1','chihe':'2','it':'3','learning':'4'}
+
+
+def main():
+    """
+    运行主函数
+    :return:
+    """
+    doc_list, class_list = get_doc_list()
+    vocab_list = createVocabList(doc_list)
+    # print vocab_list
+    with open("vocablist","w") as vocfw:
+        vocfw.write("\x01".join(vocab_list))
+    training_set = range(len(doc_list))
+    test_set = []
+    # 随机筛选10%条新闻作为测试集，留下训练集
+    for i in range(int(len(doc_list)*0.1)):
+        rand_index = int(random.uniform(0, len(training_set)))
+        test_set.append(training_set[rand_index])
+        del (training_set[rand_index])
+    train_Mat = []
+    train_classes = []
+    # 训练阶段
+    with open("pVect_array","w") as fw_pVect_array,open("array_class_p_list","w") as fw_pList:
+        for doc_index in training_set:
+            train_Mat.append(bagOfWords2Vec(vocab_list, doc_list[doc_index]))
+            train_classes.append(class_list[doc_index])
+        pVect_array, array_class_p_list=trainNBO(array(train_Mat), array(train_classes))
+
+        for r in range(pVect_array.shape[0]):
+            fw_pVect_array.write("\x01".join(str(i) for i in pVect_array[r,:])+'\n')
+
+        fw_pList.write("\x01".join(str(i) for i in array_class_p_list))
+
+        error_Count = 0
+    # 测试阶段
+    for doc_index in test_set:
+        wordVector = bagOfWords2Vec(vocab_list, doc_list[doc_index])
+        if classifyNB(array(wordVector), pVect_array, array_class_p_list, unique(class_list)) != class_list[doc_index]:
+            error_Count += 1
+    print "the error rate is:", float(error_Count) / len(test_set)
+
+if __name__ == '__main__':
+    main()
