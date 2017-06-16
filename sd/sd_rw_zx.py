@@ -89,7 +89,20 @@ header=file2dit('header')
 keywords_dict=file2dit('keywords')
 # print keywords_dict
 
+def get_proxies():
+    r = requests.get('http://192.168.0.30:8000/?types=0&count=5&country=国内')
+    ip_ports = json.loads(r.text)
+    print ip_ports
+    ip = ip_ports[0][0]
+    port = ip_ports[0][1]
+    proxies = {
+        'http': 'http://%s:%s' % (ip, port),
+        'https': 'http://%s:%s' % (ip, port)
+    }
+    return proxies
+
 def get_name_and_id():
+    # proxies=get_proxies()
     resp = requests.get('http://cms.loongscity.com/cityparlor-web/cityparlor/cityparlor/channel/celebrity/list')
     info = json.loads(resp.content)
     ret = info.get('retObj')
@@ -106,7 +119,11 @@ def get_name_and_id():
         yield info_d
 
 def get_content(url):
-    resp=requests.get(url,headers=header)
+    # proxies = get_proxies()
+    try:
+        resp=requests.get(url,headers=header)
+    except Exception:
+        return ''
     return resp.text
 
 def get_new_href(content):
@@ -115,12 +132,14 @@ def get_new_href(content):
     return href
 
 def get_detail():
+    # proxies = get_proxies()
     info_d=get_name_and_id()
+    type_id='1705171148455171636'
     for celebrity_info in info_d:
         name=celebrity_info.get('title')
         fun=celebrity_info.get('fun')
         celebrity_id=celebrity_info.get('celebrity_id')
-        type_id=celebrity_info.get('type_id')
+        # type_id=celebrity_info.get('type_id')
 
         try:
             key_wd=keywords_dict.get(name)
@@ -128,13 +147,25 @@ def get_detail():
         except:
             data={'s': name}
 
-        resp = requests.get('https://www.huxiu.com/search.html?', headers=header, params=data)
+        try:
+            resp = requests.get('https://www.huxiu.com/search.html?', headers=header, params=data)
+        except:
+            continue
         content_1 = resp.text
-        for href in get_new_href(content_1):
+        try:
+            hrefs=get_new_href(content_1)
+        except:
+            continue
+        for href in hrefs:
             content=get_content('https://www.huxiu.com'+href)
+            if not content:
+                continue
             doc=etree.HTML(content)
 
-            title=doc.xpath('//h1[@class="t-h1"]/text()')[0]
+            try:
+                title=doc.xpath('//h1[@class="t-h1"]/text()')[0]
+            except IndexError as er:
+                continue
             title=re.sub('\n','',title)
             title=re.sub(' ','',title)
 
@@ -168,6 +199,15 @@ def get_detail():
                 else:
                     imgs.append(img)
             # print imgs
+            s = '/0'                #图片格式不对，跳过
+            flag=0
+            for im in imgs:
+                if im.endswith(s):
+                    flag=1
+                    break
+            if flag==1:
+                continue
+
 
             article_content = replace_img(article_content, imgs_1,imgs)
             # print article_content
@@ -188,20 +228,20 @@ def get_detail():
 
 def save_and_write():
     db=mysql_connect()
-    sql = "INSERT INTO syd (title,content,create_date,img_show,classify,fun,celebrity_id,type_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO sd_sd (title,content,create_date,img_show,classify,fun,celebrity_id,type_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"
 
     res=get_detail()
-    s='http://img-proxy'
     with open('src', 'w') as fw:
         for title,create_date,article_content,img_show,classify,fun,celebrity_id,type_id,imgs in res:
-            for im in imgs:
-                if s in im:
-                    img_show=''
             if img_show:
                 print title
-                db.insert(sql, title, article_content, create_date,img_show,classify,fun,celebrity_id,type_id)
+                try:
+                    db.insert(sql, title, article_content, create_date,img_show,classify,fun,celebrity_id,type_id)
+                except:
+                    print 'Error connecting to MySQL on 192.168.0.202'
+                    continue
                 for i in imgs:
-                    print i
+                    # print i
                     fw.write(i+'\n')
     db.close()
 
