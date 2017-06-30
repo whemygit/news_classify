@@ -2,6 +2,13 @@
 # -- coding: utf-8 --
 import sys
 import torndb
+import sys
+import sys
+import re
+import time
+import requests
+from lxml import etree
+import json
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -33,7 +40,29 @@ def mysql_connect():
     return db
 
 
+def get_name_and_id():
+    # proxies=get_proxies()
+    resp = requests.get('http://cms.loongscity.com/cityparlor-web/cityparlor/cityparlor/channel/celebrity/list')
+    info = json.loads(resp.content)
+    ret = info.get('retObj')
+    for r in ret:
+        r = json.loads(json.dumps(r))
+        f = r.get('fun')
+        if f != 'washington':
+            continue
+        info_d = dict()
+        info_d['title'] = r.get('title')
+        info_d['celebrity_id'] = r.get('id')
+        info_d['fun'] = f
+        info_d['type_id'] = r.get('typeId')
+        yield info_d
+
 
 if __name__ == '__main__':
-    db = mysql_connect()
-    select_sql = 'SELECT title FROM sd_hxw;'
+    info_d=get_name_and_id()
+    for i in info_d:
+        if i['title']=='吴敬琏':
+            print i
+
+    # db = mysql_connect()
+    # select_sql = 'SELECT title FROM sd_hxw;'

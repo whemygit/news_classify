@@ -1,0 +1,13 @@
+'authority':'cms.loongscity.com'',
+'method':'POST'',
+'path':'/cityparlor-web/cityparlor/cityparlor/town/category/list'',
+'scheme':'https'',
+'accept':'application/json, text/javascript, */*; q=0.01'',
+'accept-encoding':'gzip, deflate, br'',
+'accept-language':'zh-CN,zh;q=0.8'',
+'content-length':'5'',
+'content-type':'application/x-www-form-urlencoded; charset=UTF-8'',
+'origin':'https':'//cms.loongscity.com'',
+'referer':'https':'//cms.loongscity.com/cityparlor-web/cityparlor/shizheng/shizheng.html'',
+'user-agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'',
+'x-requested-with':'XMLHttpRequest'
