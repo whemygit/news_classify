@@ -46,10 +46,13 @@ def rdfile2list(file_to_array):
 def strline_cut_outstop(strLine):
     import jieba
     stop = [line.strip().decode('utf-8') for line in open("D://myfile/stopw.txt").readlines()]
-    strLine.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
+    strLine=strLine.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
     seg_list = jieba.cut(strLine, cut_all=False)
     seg_list_outstop = [w for w in seg_list if w not in stop]
     return seg_list_outstop
 
+
+# print array([1,2,3,4])
+# print type(array([1,2,3,4]))
 
 

@@ -83,8 +83,8 @@ def classifyNB(vec2Classify,pVect_array,array_class_p_list,Category):
     # print 'classify_p:',classify_p
     for j in range(len(Category)):
         if classify_p[j] == classify_p.max():
-           print classify_p
-           print classify_p.std()
+           # print classify_p
+           # print classify_p.std()
            classify_result=Category[j]
     return classify_result
 
@@ -103,7 +103,7 @@ def get_doc_list():
     doc_list = []
     for i in os.listdir(root):
         print len(os.listdir(root))
-        print i
+        print i,index
         # print type(i)
         with open(root+'/' + i, 'r') as fr, open("stopw.txt", "r") as frs:
             stop = [line.strip().decode('utf-8') for line in frs.readlines()]
@@ -154,6 +154,7 @@ def main():
 
         error_Count = 0
     # 测试阶段
+    print 'unique_class_list: ',unique(class_list),type(unique(class_list))
     for doc_index in test_set:
         wordVector = bagOfWords2Vec(vocab_list, doc_list[doc_index])
         if classifyNB(array(wordVector), pVect_array, array_class_p_list, unique(class_list)) != class_list[doc_index]:
