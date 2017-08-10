@@ -29,16 +29,16 @@ headers2={"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/
     "Upgrade-Insecure-Requests":"1",
     "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"}
 
-category_dict={"1002":"shizheng",
-        "1003":"shehui",
-        "1004":"jingji",
-        "1007":"keji",
-        "1010":"chanye",
-        "1015":"lvyou",
-        "1020":"jiaoyu",
-        "1021":"wenhua",
-        "1032":"yule",
-        "1038":"tiyu"}
+# category_dict={"1002":"shizheng",
+#         "1003":"shehui",
+#         "1004":"jingji",
+#         "1007":"keji",
+#         "1010":"chanye",
+#         "1015":"lvyou",
+#         "1020":"jiaoyu",
+#         "1021":"wenhua",
+#         "1032":"yule",
+#         "1038":"tiyu"}
 
 # main_url='http://media.yeesight.com/news/news/industryCategory?isDefault=1&token=&categoryId=1002&mediaType=news&idList=&countryName=&mediaLevel=&mediaList=&pageNo=1&pageSize=15&fieldName=pubdate&order=&_='
 
@@ -64,10 +64,12 @@ def get_news_detail(main_url):
             continue
         yield new_url,new_title,new_text
 
+category_dict={"1020":"jiaoyu"}
+
 def main():
     for item in category_dict:
         with open('corpus/'+category_dict.get(item),'w') as fw:
-            for page in range(1,16):
+            for page in range(1,51):
                 main_url='''http://media.yeesight.com/news/news/industryCategory?isDefault=1&token=&categoryId=%s&mediaType=news&idList=&countryName=&mediaLevel=&mediaList=&pageNo=%s&pageSize=15&fieldName=pubdate&order=&_='''%(item,page)
                 info = get_news_detail(main_url)
                 for url,title,content in info:

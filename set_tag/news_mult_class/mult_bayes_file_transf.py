@@ -52,7 +52,12 @@ def strline_cut_outstop(strLine):
     return seg_list_outstop
 
 
-# print array([1,2,3,4])
-# print type(array([1,2,3,4]))
+if __name__ == '__main__':
+    # return_mat=file2matrix('pVect_array')
+    # print type(return_mat)
+    # print return_mat
+    return_array=rdfile2array('array_class_p_list')
+    print type(return_array)
+    print return_array
 
 

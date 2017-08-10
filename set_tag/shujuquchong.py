@@ -10,17 +10,17 @@ sys.setdefaultencoding("utf-8")
 
 #连接数据库
 def mysql_connect():
-    # mysql_par={'ip':"192.168.0.202",
-    #            'port':'3306',
-    #            'database':'spider',
-    #            'user':'root',
-    #            'password':'neiwang-zhongguangzhangshi'}
-
-    mysql_par={'ip':"119.57.93.42",
+    mysql_par={'ip':"192.168.0.202",
                'port':'3306',
                'database':'spider',
-               'user':'bigdata',
-               'password':'zhongguangzhangshi'}
+               'user':'root',
+               'password':'neiwang-zhongguangzhangshi'}
+
+    # mysql_par={'ip':"119.57.93.42",
+    #            'port':'3306',
+    #            'database':'spider',
+    #            'user':'bigdata',
+    #            'password':'zhongguangzhangshi'}
 
 
     db=torndb.Connection(host=mysql_par['ip'],
