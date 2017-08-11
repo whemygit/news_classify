@@ -49,6 +49,16 @@ category_dict={"cj":"caijing",
     "ty":"tiyu",
     "sh":"shehui"}
 
+tag_classsify={
+    "auto":"0",
+    "cj":"1",
+    "sh":"3",
+    "life":"4",
+    "gn":"5",
+    "ty":"6",
+    "cul":"7",
+    "yl":"8"}
+
 
 def main():
     for item in category_dict:
@@ -80,3 +90,4 @@ if __name__ == '__main__':
     #     print new_title
     # new_url="http://www.chinanews.com/sh/2017/08-04/8295772.shtml"
     # get_news_detail(new_url)
+    'http://channel.chinanews.com/cns/s/channel:cj.shtml?pager=1&pagenum=20&_='
