@@ -7,13 +7,14 @@ import requests
 from lxml import etree
 import json
 import torndb
+import redis
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
 now=time.strftime('%Y-%m-%d',time.localtime(time.time()))
-print now
-category_id, category_pid, em_teg = 0, 0, 2
+# print now
+category_pid, em_teg = 0, 2
 
 def mysql_connect():
     mysql_par = {'ip': "192.168.0.202:3306",
@@ -102,7 +103,7 @@ def get_news_detail(new_url):
     resp=requests.get(new_url)
     detail=etree.HTML(resp.content)
     # new_text=detail.xpath('//*[@id="cont_1_1_2"]/div[6]')
-    new_text = etree.tostring(detail.xpath('//*[@id="cont_1_1_2"]/div[6]')[0], xml_declaration=True,
+    new_text = etree.tostring(detail.xpath('//div[@class="left_zw"]')[0], xml_declaration=True,
                               encoding='utf-8').decode()
     new_text = filter_tags(new_text)
     new_source=detail.xpath('//div[@class="left-t"]/text()')[0]
@@ -126,6 +127,7 @@ category_dict={"cj":"caijing",
     "life":"shenghuo",
     "gn":"shizheng",
     "auto":"qiche",
+    "ty":"tiyu",
     "sh":"shehui"}
 
 tag_classsify={
@@ -138,11 +140,28 @@ tag_classsify={
     "cul":"7",
     "yl":"8"}
 
+news_type_id={
+    "auto":"1708161042182380000",
+    "cj":"1708161040317410000",
+    "sh":"1708161038521350000",
+    "life":"1708161041028580000",
+    "gn":"1708161041390550000",
+    "ty":"1708161040066730000",
+    "cul":"1708161039170770000",
+    "yl":"1708161039480920000"}
+
 
 
 # main_url='http://channel.chinanews.com/cns/s/channel:cj.shtml?&pagenum=20&_='
+redis_urllist=redis.Redis()
 def news_info_collect(main_url):
     new_url_list, new_title_list, new_date_list=get_news_urllist(main_url)
+    for url in new_url_list:
+        if redis_urllist.exists(url):
+            new_url_list.remove(url)
+        else:
+            redis_urllist.set(url,1)
+            redis_urllist.expire(url,259200)
     for i,new_url in enumerate(new_url_list):
         new_title=new_title_list[i]
         new_date=new_date_list[i]
@@ -154,6 +173,8 @@ def news_info_collect(main_url):
             news_info['title'] = new_title
             news_info['content'] = new_text
             news_info['source'] = new_source
+            if news_info['source']=='':
+                news_info['source']='中国新闻网'
             news_info['imgs'] = imgs
             news_info['img_show'] = img_show
             yield news_info
@@ -167,13 +188,10 @@ def main():
             print item
             main_url = 'http://channel.chinanews.com/cns/s/channel:%s.shtml?&pagenum=20&_='%item
             classify_tag=tag_classsify.get(item)
+            newstype_id = news_type_id.get(item)
             for news_info in news_info_collect(main_url):
-                print news_info.get('url'),news_info.get('title')
-                try:
-                    res = db.insert(sql, category_id, category_pid, em_teg,news_info.get('title'), news_info.get('date'), news_info.get('source'),news_info.get('img_show'), news_info.get('content'), classify_tag)
-                    print 'save successful'
-                except Exception as e:
-                    traceback.print_exc(e)
+                print news_info.get('url'),news_info.get('title'),news_info.get('source'),type(news_info.get('source'))
+                res = db.insert(sql, newstype_id, category_pid, em_teg,news_info.get('title'), news_info.get('date'), news_info.get('source'),news_info.get('img_show'), news_info.get('content'), classify_tag)
                 for i in news_info.get('imgs'):
                     fw.write(i+'\n')
 
@@ -182,7 +200,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main_url = 'http://channel.chinanews.com/cns/s/channel:cj.shtml?&pagenum=20&_='
+    # main_url = 'http://channel.chinanews.com/cns/s/channel:cj.shtml?&pagenum=20&_='
     # get_news_urllist(main_url)
     # news_info_collect()
 
