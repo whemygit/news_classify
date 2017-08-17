@@ -13,29 +13,29 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 now=time.strftime('%Y-%m-%d',time.localtime(time.time()))
-# print now
+print now
 category_pid, em_teg = 0, 2
 
 def mysql_connect():
-    mysql_par = {'ip': "192.168.0.202:3306",
-                 'port': '3306',
-                 'database': 'spider',
-                 'user': 'suqi',
-                 'password': '123456',
-                 'charset':'utf8'}
+    # mysql_par = {'ip': "192.168.0.202:3306",
+    #              'port': '3306',
+    #              'database': 'spider',
+    #              'user': 'suqi',
+    #              'password': '123456',
+    #              'charset':'utf8'}
 
-    # mysql_par={'ip':"119.57.93.42",
-    #            'port':'3306',
-    #            'database':'spider',
-    #            'user':'bigdata',
-    #            'password':'zhongguangzhangshi'}
+    mysql_par={'ip':"119.57.93.42",
+               'port':'3306',
+               'database':'spider',
+               'user':'bigdata',
+               'password':'zhongguangzhangshi'}
 
 
     db = torndb.Connection(host=mysql_par.get('ip'),
                            database=mysql_par.get('database'),
                            user=mysql_par.get('user'),
-                           password=mysql_par.get('password'),
-                           charset=mysql_par.get('charset'),
+                           password=mysql_par.get('password')
+                           # charset=mysql_par.get('charset')
                            )
     return db
 
@@ -106,8 +106,11 @@ def get_news_detail(new_url):
     new_text = etree.tostring(detail.xpath('//div[@class="left_zw"]')[0], xml_declaration=True,
                               encoding='utf-8').decode()
     new_text = filter_tags(new_text)
-    new_source=detail.xpath('//div[@class="left-t"]/text()')[0]
-    new_source=new_source.split(r'来源：')[1]
+    try:
+        new_source=detail.xpath('//div[@class="left-t"]/text()')[0]
+        new_source=new_source.split(r'来源：')[1]
+    except:
+        new_source=''
     imgs = re.findall(r'<img.+?src="(.+?)".+?>', new_text)
     new_text = replace_img(new_text, imgs)
     img_show = []
@@ -153,20 +156,23 @@ news_type_id={
 
 
 # main_url='http://channel.chinanews.com/cns/s/channel:cj.shtml?&pagenum=20&_='
-redis_urllist=redis.Redis()
+# redis_urllist=redis.Redis()
 def news_info_collect(main_url):
     new_url_list, new_title_list, new_date_list=get_news_urllist(main_url)
-    for url in new_url_list:
-        if redis_urllist.exists(url):
-            new_url_list.remove(url)
-        else:
-            redis_urllist.set(url,1)
-            redis_urllist.expire(url,259200)
+    # for url in new_url_list:
+    #     if redis_urllist.exists(url):
+    #         new_url_list.remove(url)
+    #     else:
+    #         redis_urllist.set(url,1)
+    #         redis_urllist.expire(url,259200)
     for i,new_url in enumerate(new_url_list):
         new_title=new_title_list[i]
         new_date=new_date_list[i]
         if new_date==now:
-            new_text, new_source, imgs, img_show=get_news_detail(new_url)
+            try:
+                new_text, new_source, imgs, img_show=get_news_detail(new_url)
+            except:
+                continue
             news_info = dict()
             news_info['url']=new_url
             news_info['date'] = new_date
@@ -191,18 +197,14 @@ def main():
             newstype_id = news_type_id.get(item)
             for news_info in news_info_collect(main_url):
                 print news_info.get('url'),news_info.get('title'),news_info.get('source'),type(news_info.get('source'))
-                res = db.insert(sql, newstype_id, category_pid, em_teg,news_info.get('title'), news_info.get('date'), news_info.get('source'),news_info.get('img_show'), news_info.get('content'), classify_tag)
+                try:
+                    res = db.insert(sql, newstype_id, category_pid, em_teg,news_info.get('title'), news_info.get('date'), news_info.get('source'),news_info.get('img_show'), news_info.get('content'), classify_tag)
+                except Exception as e:
+                    print e
                 for i in news_info.get('imgs'):
                     fw.write(i+'\n')
 
 
 
-
-
 if __name__ == '__main__':
-    # main_url = 'http://channel.chinanews.com/cns/s/channel:cj.shtml?&pagenum=20&_='
-    # get_news_urllist(main_url)
-    # news_info_collect()
-
-    # news_info_collect(main_url)
     main()

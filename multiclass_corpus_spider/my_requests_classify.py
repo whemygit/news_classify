@@ -50,8 +50,8 @@ def requests_post_1(data):
     return resp
 
 
-def change_is_resp(newsid):
-    change_sql = '''update _news_data_classify set is_resp=1 where newsid=%s''' % newsid
+def change_is_resp():
+    change_sql = '''update _news_data_classify set is_resp=1 where  news_date="%s" and is_resp=0'''% date_n
     res = db.execute(change_sql)
     print res
 
@@ -86,7 +86,7 @@ def get_info(city):
         d['typeId'] = r.get('category_id')
 
         resp = requests_post_1(d)
-        print r.get('area'), resp.content
+        print r.get('area'), resp.content,r.get('title'),r.get('category_id')
         # news_id = r.get('newsid')
         # change_is_resp(news_id)
 
@@ -100,11 +100,11 @@ def get_area_code(city):
             return r.get('code')
 
 
+
+
 if __name__ == '__main__':
-    # get_info('天津市')
     for _city in areas:
         print _city
         get_info(_city)
-        # change_is_resp()
-        # requests_post(data)
-        # get_area_code(_city)
+    change_is_resp()
+

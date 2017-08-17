@@ -59,10 +59,13 @@ def get_info(city):
     sql = '''select * from _news_data where area="%s" AND news_date="%s" AND img_show is not NULL AND is_resp=0 ORDER BY news_date DESC''' % (
     city, date_n)
     # sql='''select * from _news_data where area area="北京市"AND img_show is not NULL ORDER BY news_date DESC LIMIT 1;'''
-    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND img_show is not NULL AND is_resp=0 ORDER BY news_date DESC LIMIT 5;''' % (
+    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND img_show is not NULL AND is_resp=0 ORDER BY news_date DESC LIMIT 2;''' % (
     city, date_n)
     res = db.query(sql)
     res_rec=db.query(rec_newsid_sql)
+    newsid_rec_list=[]
+    for i in res_rec:
+        newsid_rec_list.append(i.get('newsid'))
     for r in res:
         d = dict()
         text = str(r.get('text')).replace(r'\n', '').replace('\\', '').replace('http', 'https').replace(
@@ -84,15 +87,19 @@ def get_info(city):
         d['title'] = r.get('title')
         d['isTop'] = 0
         d['isEssential'] = 0
-        for recid in res_rec:
-            if r.get('newsid')==recid.get('newsid'):
-                d['isRecommend'] = 1
-            else:
-                d['isRecommend'] = 0
+        d['typeId'] = '1708161038001960000'
+        d['isRecommend'] = 0
+        if r.get('newsid') in newsid_rec_list:
+            d['isRecommend'] = 1
+        # for recid in res_rec:
+        #     if r.get('newsid')==recid.get('newsid'):
+        #         d['isRecommend'] = 1
+            # else:
+            #     d['isRecommend'] = 0
         resp = requests_post_1(d)
         print r.get('area'), resp.content
-        # news_id = r.get('newsid')
-        # change_is_resp(news_id)
+        news_id = r.get('newsid')
+        change_is_resp(news_id)
 
 
 def get_area_code(city):
