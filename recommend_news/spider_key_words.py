@@ -24,7 +24,9 @@ def spider_yaowen_title(main_url):
     resp=requests.get(main_url)
     # print resp.text
     detail=etree.HTML(resp.text)
-    yaowen_title_list=detail.xpath('//div[@class="yaowen_news"]/div/ul/li/a/text()')
+    # yaowen_title_list=detail.xpath('//div[@class="news"]/p/a/text()')      搜狐要闻，单独抓，政治
+    # yaowen_title_list=detail.xpath('//div[@class="list16"]/ul/li/a/strong/text()')  #搜狐strong，可单独抓
+    yaowen_title_list = detail.xpath('//div[@class="list16"]/ul/li/a/text()')
     return yaowen_title_list
 
 def wangyi_yaowen_titlelist():
@@ -36,7 +38,7 @@ def wangyi_yaowen_titlelist():
             title_list.append(i)
     return title_list
 
-def key_words_generate():
+def key_wordsdict_generate():
     title_list=wangyi_yaowen_titlelist()
     key_words_dict={}
     for i in title_list:
@@ -48,19 +50,70 @@ def key_words_generate():
                     key_words_dict.update({t:1})
                 else:
                     key_words_dict[t]+=1
-    return key_words_dict
+    print key_words_dict
+    sorted_dict = sorted(key_words_dict.iteritems(), key=operator.itemgetter(1), reverse=True)
+    return sorted_dict
 
+def keywords_set_generate():
+    title_list=wangyi_yaowen_titlelist()
+    key_words_list=[]
+    for i in title_list:
+        for t in news_cut_outstop(i):
+            if len(t)>=2:
+                key_words_list.append(t)
+    # return key_words_list
+    keywords_set = set(key_words_list)
+    return keywords_set
+
+def wangyi_title_segset():
+    main_url='http://www.163.com/'
+    title_xpath_rules='//div[@class="yaowen_news"]/div/ul/li/a/text()'
+    resp=requests.get(main_url)
+    detail=etree.HTML(resp.text)
+    yaowen_title_list=detail.xpath(title_xpath_rules)
+    for i in yaowen_title_list:
+        print i
+    key_words_list = []
+    for title in yaowen_title_list:
+        for t in news_cut_outstop(title):
+            if len(t) >= 2:
+                key_words_list.append(t)
+    keywords_set = set(key_words_list)
+    return keywords_set
+
+def souhu_title_segset():
+    main_url='http://www.sohu.com/'
+    title_xpath_rules=['//div[@class="news"]/p/a/text()','//div[@class="list16"]/ul/li/a/strong/text()','//div[@class="list16"]/ul/li/a/text()']
+    resp=requests.get(main_url)
+    detail=etree.HTML(resp.text)
+    title_list = []
+    for rule in title_xpath_rules:
+        yaowen_title_list=detail.xpath(rule)
+        for i in yaowen_title_list:
+            title_list.append(i.strip())
+    key_words_list = []
+    for title in title_list:
+        for t in news_cut_outstop(title):
+            if len(t) >= 2:
+                key_words_list.append(t)
+    keywords_set = set(key_words_list)
+    return keywords_set
+
+now=time.strftime('%Y-%m-%d',time.localtime(time.time()))
+print now
+print time.time()
+print time.strftime('%Y-%m-%d',time.localtime(time.time()-86400))
+print type(time.strftime('%Y-%m-%d',time.localtime(time.time()-86400)))
 
 if __name__ == '__main__':
-   a= key_words_generate()
-   print a
-   for k,v in a.items():
-       print k,v
+    a={'a':1,'b':2,'c':3}
+    # print a
+    # for i in a:
+    #     print i
+    # for i in a.itervalues():
+    #     print i
 
-   sorted_dict = sorted(a.iteritems(), key=operator.itemgetter(1), reverse=True)
-   print sorted_dict
-   for i in sorted_dict:
-       print i[0],i[1]
 
-   # ss=[u'\u4e2d\u56fd\u5171\u4ea7\u515a']
-   # print ss[0]
+
+
+
