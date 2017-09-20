@@ -7,6 +7,7 @@ import jieba
 import time
 import re
 import torndb
+import traceback
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -14,28 +15,29 @@ sys.setdefaultencoding("utf-8")
 today=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 yesterday=time.strftime('%Y-%m-%d',time.localtime(time.time()-86400))
 
-def mysql_connect():
-    mysql_par = {'ip': "192.168.0.202:3306",
-                 'port': '3306',
-                 'database': 'spider',
-                 'user': 'suqi',
-                 'password': '123456',
-                 'charset':'utf8'}
+mysql = {
+    "host": "119.57.93.42",
+    "port": "3306",
+    "database": "spider",
+    "password": "zhongguangzhangshi",
+    "user": "bigdata",
+    "charset":"utf8"
+}
+# mysql = {
+#     "host": "192.168.0.202",
+#     "port": "3306",
+#     "database": "spider",
+#     "password": "123456",
+#     "user": "suqi",
+#     "charset": "utf8"
+# }
 
-    # mysql_par={'ip':"119.57.93.42",
-    #            'port':'3306',
-    #            'database':'spider',
-    #            'user':'bigdata',
-    #            'password':'zhongguangzhangshi'}
-
-
-    db = torndb.Connection(host=mysql_par.get('ip'),
-                           database=mysql_par.get('database'),
-                           user=mysql_par.get('user'),
-                           password=mysql_par.get('password')
-                           # charset=mysql_par.get('charset')
-                           )
-    return db
+try:
+    db = torndb.Connection(host=mysql.get('host'), database=mysql.get('database'),
+                           user=mysql.get('user'),
+                           password=mysql.get('password'),charset=mysql.get('charset'))
+except Exception, e:
+    print traceback.print_exc(e)
 
 def filter_tags(htmlstr):
     """
@@ -66,8 +68,7 @@ def replace_img(text, srcs):
 
 
 def news_cut_outstop(news_text):
-    # stopwd=[line.strip().decode('utf-8') for line in open('/home/spider/rec_spider/stopw.txt','r').readlines()]
-    stopwd = [line.strip().decode('utf-8') for line in open('stopw.txt', 'r').readlines()]
+    stopwd=[line.strip().decode('utf-8') for line in open('/home/spider/rec_spider/stopw.txt','r').readlines()]
     news_text=news_text.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
     seg_list=jieba.cut(news_text,cut_all=False)
     seg_list_outstop=[w for w in seg_list if w not in stopwd]
@@ -130,9 +131,10 @@ def recomend_news():
     title_url_dict=title_url_list()
     rec_news_dict={}
     for keywd in keywd_list:
-        # print keywd
+        print keywd
         for title in title_url_dict:
             if keywd in title:
+                # print keywd,title
                 rec_news_dict.update({title_url_dict.get(title):title})
         keywd_list.remove(keywd)
     return rec_news_dict
@@ -167,15 +169,18 @@ def news_detail_spider(new_url):
     # print resp.content
     detail=etree.HTML(resp.content)
     new_content = etree.tostring(detail.xpath('//*[@id="artibody"]')[0], xml_declaration=True,
-                              encoding='utf-8').encode()
+                              encoding='utf-8')
     new_content=filter_tags(new_content)
     new_content = re.sub(r'<p>[\s|\S]*?lcsds_icon.jpg[\s|\S]*?</p>', '', new_content)
-    imgs=re.findall(r'<img.+?src="(.+?)".+?>', new_content)
-    new_content=replace_img(new_content,imgs)
+    new_content = re.sub(r'<div>[\s|\S]*?icon01.png[\s|\S]*?</div>', '', new_content)
+    new_content = re.sub(r'<img src=[\s|\S].*?usstocks0108.png[\s|\S].*?>', '', new_content)
+    new_content = re.sub(r'<div><p>进入【新浪财经股吧】讨论</p></div>', '', new_content)
     try:
-        new_source=detail.xpath('//span[@class="source"]/a/text()')
+        new_source=detail.xpath('//span[@class="source"]/a/text()')[0]
     except:
         new_source='新浪新闻'
+    imgs=re.findall(r'<img.+?src="(.+?)".+?>', new_content)
+    new_content=replace_img(new_content,imgs)
     img_show = []
     if len(imgs) == 1 or len(imgs) >= 3:  # 大于三张图可以考虑留一下。
         img_show = ','.join(
@@ -183,6 +188,8 @@ def news_detail_spider(new_url):
              imgs])
         if len(imgs) > 3:
             img_show = ','.join(img_show.split(',')[0:3])
+    if len(imgs)==2:
+        img_show=['https://cityparlor.oss-cn-beijing.aliyuncs.com/news/img/' + src.split('/')[-1] for src in imgs][0]
     if not img_show:
         img_show = None
     return new_content,imgs,img_show,new_source
@@ -190,17 +197,18 @@ def news_detail_spider(new_url):
 
 def main():
     category_id, category_pid, em_teg=0,0,2
-    db = mysql_connect()
     import traceback
     sql = r"""insert into rec_news_data (category_id,category_pid,em_teg,title, news_date, text_f, text, img_show) values (%s, %s, %s, %s, %s, %s, %s, %s)"""
     rec_res=news_spider()
-    # with open('/home/spider/rec_spider/src', 'w ') as fw:
-    with open('src', 'w ') as fw:
+    with open('/home/spider/rec_spider/src', 'w ') as fw:
         for new_title, new_date, new_source, new_content, imgs, img_show in rec_res:
-             db.insert(sql, category_id, category_pid, em_teg, new_title, new_date, new_source, new_content, img_show)
-             for i in imgs:
-                 fw.write(i+'\n')
-
+            # print new_title, new_date, new_source, new_content, imgs, img_show
+            try:
+                r=db.insert(sql, category_id, category_pid, em_teg, new_title, new_date, new_source, new_content, img_show)
+            except Exception as e:
+                print e
+            for i in imgs:
+                fw.write(i+'\n')
 
 if __name__ == '__main__':
     main()

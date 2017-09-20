@@ -74,7 +74,7 @@ def get_area_code(city):
 
 
 def get_info():
-    sql = '''select * from _news_data_classify_language where news_date="%s" AND is_resp=0 ORDER BY news_date DESC limit 1;''' % date_n
+    sql = '''select * from _news_data_classify_language where news_date="%s" AND is_resp=0;''' % date_n
     # sql = '''select * from _news_data_classify_language where newsid=1969;'''
     res = db.query(sql)
     for r in res:

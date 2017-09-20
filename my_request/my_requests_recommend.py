@@ -13,15 +13,24 @@ sys.setdefaultencoding("utf-8")
 areas = ['北京市', '天津市', '上海市', '广州市', '深圳市',
          '鞍山市', '阜新市', '锦州市', '铁岭市', '辽阳市',
          '葫芦岛市', '营口市', '盘锦市', '沈阳市', '本溪市',
-         '朝阳市', '抚顺市', '大连市', '丹东市','哈尔滨市','呼和浩特市', '龙岩市', '阿坝藏族羌族自治州']
-mysql = {
-    "host": "192.168.0.202",
-    "port": "3306",
-    "database": "spider",
-    "password": "123456",
-    "user": "suqi",
-    "charset": "utf8"
-}
+         '朝阳市', '抚顺市', '大连市', '丹东市','哈尔滨市',
+         '龙岩市', '呼和浩特市', '阿坝藏族羌族自治州',
+         '长春市','南京市','武汉市','重庆市',
+         '成都市','西安市','石家庄市','太原市',
+         '唐山市','包头市','吉林市','齐齐哈尔市',
+         '徐州市','杭州市','福州市','南昌市',
+         '济南市','青岛市','淄博市','郑州市',
+         '长沙市','贵阳市','昆明市','兰州市',
+         '乌鲁木齐市','合肥市','南宁市','海口市',
+         '西宁市','银川','宁波市','厦门市','雄安新区']
+# mysql = {
+#     "host": "192.168.0.202",
+#     "port": "3306",
+#     "database": "spider",
+#     "password": "123456",
+#     "user": "suqi",
+#     "charset": "utf8"
+# }
 headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'accept-encoding': 'gzip, deflate, br',
@@ -30,14 +39,14 @@ headers = {
     'upgrade-insecure-requests': '1',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
 }
-# mysql = {
-#     "host": "119.57.93.42",
-#     "port": "3306",
-#     "database": "spider",
-#     "password": "zhongguangzhangshi",
-#     "user": "bigdata",
-#     "charset": "utf8"
-# }
+mysql = {
+    "host": "119.57.93.42",
+    "port": "3306",
+    "database": "spider",
+    "password": "zhongguangzhangshi",
+    "user": "bigdata",
+    "charset": "utf8"
+}
 
 db = torndb.Connection(host=mysql.get('host'), database=mysql.get('database'),
                        user=mysql.get('user'),
@@ -47,10 +56,8 @@ date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
 
 
 def requests_post(data):
-    # resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
     # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)         #本地
-    resp = requests.post('http://192.168.0.249:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,
-                         headers=headers)
     return resp
 
 def requests_post_shouye(data):
@@ -66,12 +73,10 @@ def change_is_resp(newsid):
 
 
 def get_info(city):
-    # sql = '''select * from _news_data where area="%s" AND news_date="%s"''' % (
-    # city, date_n)
     sql = '''select * from _news_data where area="%s" AND news_date="%s" AND is_resp=0''' % (
-        city, date_n)
+    city, date_n)
     # sql='''select * from _news_data where area area="北京市"AND img_show is not NULL ORDER BY news_date DESC LIMIT 1;'''
-    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND is_resp=0 LIMIT 2;''' % (
+    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND is_resp=0 LIMIT 5;''' % (
     city, date_n)
     res = db.query(sql)
     res_rec=db.query(rec_newsid_sql)
@@ -111,27 +116,24 @@ def get_info(city):
         d['typeId'] = '1708161038001960000'
         d['isRecommend'] = 0
         resp = requests_post(d)
-        print d
         print r.get('area'), resp.content
-        break
 
-        # # 推荐到首页
-        # if r.get('newsid') in newsid_rec_list:
-        #     rec_data = {}
-        #     rec_data['area'] = d.get('area')
-        #     rec_data['title'] = d.get('title')
-        #     rec_data['source'] = d.get('source')
-        #     rec_data['isTop'] = 0
-        #     rec_data['isEssential'] = 0
-        #     rec_data['classify'] = d.get('classify')
-        #     rec_data['objId'] = json.loads(resp.content).get('retObj')
-        #     rec_data['objType'] = 'news'
-        #     rec_data['imageUrl'] = d.get('pics')
-        #     resp_shouye = requests_post_shouye(rec_data)
-        #     print resp_shouye.content, d.get('title'), 'shouyetuijian',rec_data.get('source')
-        #     # print rec_data.get('source'),rec_data.get('area'),rec_data.get('title')
-        # news_id = r.get('newsid')
-        # change_is_resp(news_id)
+        # 推荐到首页
+        if r.get('newsid') in newsid_rec_list:
+            rec_data = {}
+            rec_data['area'] = d.get('area')
+            rec_data['title'] = d.get('title')
+            rec_data['source'] = d.get('source')
+            rec_data['isTop'] = 0
+            rec_data['isEssential'] = 0
+            rec_data['classify'] = d.get('classify')
+            rec_data['objId'] = json.loads(resp.content).get('retObj')
+            rec_data['objType'] = 'news'
+            rec_data['imageUrl'] = d.get('pics')
+            resp_shouye = requests_post_shouye(rec_data)
+            print resp_shouye.content, d.get('title'), 'shouyetuijian'
+        news_id = r.get('newsid')
+        change_is_resp(news_id)
 
 
 def get_area_code(city):
