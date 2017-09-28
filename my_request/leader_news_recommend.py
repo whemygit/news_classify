@@ -417,7 +417,8 @@ date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
 
 def requests_post(data):
     # resp = requests.post('http://cms.loongscity.com/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)
-    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,
+                         headers=headers)  # 服务器
     # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)         #本地
     return resp
 
@@ -438,9 +439,10 @@ def change_is_resp(newsid):
 def get_info():
     sql = '''select * from rec_news_data where is_resp=0;'''
     res = db.query(sql)
+    is_xdd = False
     for r in res:
-        d=dict()
-        d['title']=r.get('title')
+        d = dict()
+        d['title'] = r.get('title')
         d['area'] = 0
         for area in AREA_DICT.keys():
             if '市' in area:
@@ -455,28 +457,32 @@ def get_info():
         d['counts'] = '0'
         d['languageVersion'] = 'ZH'
         d['isRecommend'] = 1
-        img_show=r.get('img_show')
-        if img_show==None:
-            d['classify']=0
+        img_show = r.get('img_show')
+        if img_show == None:
+            d['classify'] = 0
         else:
-            img_show_len=len(img_show.split(','))
-            if img_show_len<=2:
-                d['classify']=2
-                d['pics']=img_show.split(',')[0]
+            img_show_len = len(img_show.split(','))
+            if img_show_len <= 2:
+                d['classify'] = 2
+                d['pics'] = img_show.split(',')[0]
             else:
-                d['classify']=1
-                d['pics']=img_show
+                d['classify'] = 1
+                d['pics'] = img_show
         d['isTop'] = 0
         d['isEssential'] = 0
         resp = requests_post(d)
-        print resp.content,r.get('title')
+        print resp.content, r.get('title')
 
-        #推荐到首页
-        rec_data={}
+
+        # 推荐到首页
+        rec_data = {}
         rec_data['area'] = d.get('area')
         rec_data['title'] = d.get('title')
         rec_data['source'] = d.get('source')
         rec_data['isTop'] = 0
+        if r'习近平' or r'李克强' in d.get('title'):
+            rec_data['isTop'] = 1
+            is_xdd = True
         rec_data['isEssential'] = 0
         rec_data['classify'] = d.get('classify')
         rec_data['objId'] = json.loads(resp.content).get('retObj')
@@ -484,12 +490,37 @@ def get_info():
         rec_data['languageVersion'] = d.get('languageVersion')
         rec_data['imageUrl'] = d.get('pics')
         resp_shouye = requests_post_shouye(rec_data)
-        print resp_shouye.content,d.get('title'),'shouyetuijian',rec_data.get('area'),rec_data.get('languageVersion')
+        ret_id = json.loads(resp_shouye.content).get('retObj')
+        print resp_shouye.content, d.get('title'), 'shouyetuijian', rec_data.get('area'), rec_data.get(
+            'languageVersion')
+        if is_xdd and ret_id:
+            yield ret_id
 
         news_id = r.get('newsid')
         change_is_resp(news_id)
 
+
+def is_new_rec_top():
+    is_delete = False
+    with open('ret_id_and_title', 'r') as fr:
+        ret_id_old_list = [line for line in fr.readlines()]
+    with open('ret_id_and_title', 'w') as fw:
+        for ret_id in get_info():
+            if ret_id:
+                is_delete = True
+                fw.write(ret_id + '\n')
+    if is_delete:
+        for ret_id_old in ret_id_old_list:
+            delete_top(ret_id_old)
+
+
+def delete_top(ret_id):
+    data = {
+        'id': ret_id
+    }
+    resp = requests.post('http://192.168.1.13:8080:8080/cityparlor-web/cityparlor/cityparlor/index/delete', data=data)
+    print resp.content
+
+
 if __name__ == '__main__':
-    get_info()
-
-
+    is_new_rec_top()

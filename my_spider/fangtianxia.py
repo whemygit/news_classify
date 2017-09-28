@@ -84,5 +84,6 @@ def area_price_spider():
     print data_max
 
 
+
 if __name__ == '__main__':
     area_price_spider()

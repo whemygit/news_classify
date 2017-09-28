@@ -115,6 +115,7 @@ def get_info(city):
         d['isEssential'] = 0
         d['typeId'] = '1708161038001960000'
         d['isRecommend'] = 0
+        d['languageVersion'] = 'ZH'
         resp = requests_post(d)
         print r.get('area'), resp.content
 
@@ -130,8 +131,9 @@ def get_info(city):
             rec_data['objId'] = json.loads(resp.content).get('retObj')
             rec_data['objType'] = 'news'
             rec_data['imageUrl'] = d.get('pics')
+            rec_data['languageVersion'] = d.get('languageVersion')
             resp_shouye = requests_post_shouye(rec_data)
-            print resp_shouye.content, d.get('title'), 'shouyetuijian'
+            print resp_shouye.content, d.get('title'), 'shouyetuijian',rec_data.get('languageVersion')
         news_id = r.get('newsid')
         change_is_resp(news_id)
 
