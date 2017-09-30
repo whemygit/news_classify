@@ -15,22 +15,22 @@ sys.setdefaultencoding("utf-8")
 today=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 yesterday=time.strftime('%Y-%m-%d',time.localtime(time.time()-86400))
 
-# mysql = {
-#     "host": "119.57.93.42",
-#     "port": "3306",
-#     "database": "spider",
-#     "password": "zhongguangzhangshi",
-#     "user": "bigdata",
-#     "charset":"utf8"
-# }
 mysql = {
-    "host": "192.168.0.202",
+    "host": "119.57.93.42",
     "port": "3306",
     "database": "spider",
-    "password": "123456",
-    "user": "suqi",
-    "charset": "utf8"
+    "password": "zhongguangzhangshi",
+    "user": "bigdata",
+    "charset":"utf8"
 }
+# mysql = {
+#     "host": "192.168.0.202",
+#     "port": "3306",
+#     "database": "spider",
+#     "password": "123456",
+#     "user": "suqi",
+#     "charset": "utf8"
+# }
 
 try:
     db = torndb.Connection(host=mysql.get('host'), database=mysql.get('database'),
@@ -72,7 +72,7 @@ def replace_img(text, srcs):
 
 
 def news_cut_outstop(news_text):
-    stopwd=[line.strip().decode('utf-8') for line in open('stopw.txt','r').readlines()]
+    stopwd=[line.strip().decode('utf-8') for line in open('/home/spider/rec_spider/stopw.txt','r').readlines()]
     news_text=news_text.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
     seg_list=jieba.cut(news_text,cut_all=False)
     seg_list_outstop=[w for w in seg_list if w not in stopwd]
@@ -132,25 +132,16 @@ def recomend_news():
     keywd_set=intersect_keywd_set()
     keywd_list=list(keywd_set)
     keywd_list.reverse()
-    print keywd_list
-    for i in keywd_list:
-        print i
-    print '############################################:'+str(len(keywd_list))
-    if r'习近平' in keywd_list:
-        keywd_list.remove(r'习近平')
-    print len(keywd_list)
-    for i in keywd_list:
-        print i
-    # title_url_dict=title_url_list()
-    # rec_news_dict={}
-    # for keywd in keywd_list:
-    #     print keywd
-    #     for title in title_url_dict:
-    #         if keywd in title:
-    #             # print keywd,title
-    #             rec_news_dict.update({title_url_dict.get(title):title})
-    #     keywd_list.remove(keywd)
-    # return rec_news_dict
+    title_url_dict=title_url_list()
+    rec_news_dict={}
+    for keywd in keywd_list:
+        print keywd
+        for title in title_url_dict:
+            if keywd in title:
+                # print keywd,title
+                rec_news_dict.update({title_url_dict.get(title):title})
+        keywd_list.remove(keywd)
+    return rec_news_dict
 
 def news_spider():
     rec_news_dict=recomend_news()
@@ -173,6 +164,7 @@ def news_spider():
                 print new_title,new_date,url
                 yield new_title, new_date, new_source, new_content, imgs, img_show
             except:
+                print 'no news available'
                 continue
 
 
@@ -185,6 +177,8 @@ def news_detail_spider(new_url):
     new_content = etree.tostring(detail.xpath('//*[@id="artibody"]')[0], xml_declaration=True,
                               encoding='utf-8')
     new_content=filter_tags(new_content)
+    new_content = re.sub(r'<!--行情图 start-->[\s|\S]*?<!--行情图 end-->', '', new_content)
+    new_content = re.sub(r'<!--轮播 start-->[\s|\S]*?<!--直播推荐 end-->', '', new_content)
     new_content = re.sub(r'<p>[\s|\S]*?lcsds_icon.jpg[\s|\S]*?</p>', '', new_content)
     new_content = re.sub(r'<div>[\s|\S]*?icon01.png[\s|\S]*?</div>', '', new_content)
     new_content = re.sub(r'<img src=[\s|\S].*?usstocks0108.png[\s|\S].*?>', '', new_content)
@@ -228,6 +222,5 @@ def main():
                     fw.write(i+'\n')
 
 if __name__ == '__main__':
-    recomend_news()
-    # main()
+    main()
 

@@ -3,7 +3,16 @@
 import sys
 import json
 
-jsonstr = """
+import MySQLdb
+import datetime
+
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+
+
+jsonstr="""
+
 [
     {
         "id_title": "",
@@ -12,7 +21,7 @@ jsonstr = """
         "pid": "1708271201504590140",
         "id": ""
     },
-
+    
     {
         "id_title": "",
         "pid_title": "土地开发",
@@ -206,7 +215,7 @@ jsonstr = """
         "pid": "1708271201504590140",
         "id": ""
     },
-
+    
      {
         "id_title": "",
         "pid_title": "市政建设",
@@ -1121,7 +1130,7 @@ jsonstr = """
         "pid": "1708271201536210155",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "建筑建材",
@@ -1206,7 +1215,7 @@ jsonstr = """
         "pid": "1708271201536210155",
         "id": ""
     },
-
+    
     {
         "id_title": "",
         "pid_title": "建筑建材",
@@ -1227,7 +1236,7 @@ jsonstr = """
         "pid": "1708271201536210155",
         "id": ""
     },
-
+  
     {
         "id_title": "",
         "pid_title": "交通运输",
@@ -1241,7 +1250,7 @@ jsonstr = """
         "pid": "1706231226562740018",
         "id": ""
     },
-
+    
      {
         "id_title": "",
         "pid_title": "交通运输",
@@ -1389,7 +1398,7 @@ jsonstr = """
         "pid": "1706231226562740018",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "交通运输",
@@ -1508,7 +1517,7 @@ jsonstr = """
         "pid": "1706231226562740018",
         "id": ""
     },
-
+    
     {
         "id_title": "",
         "pid_title": "交通运输",
@@ -2164,7 +2173,7 @@ jsonstr = """
         "pid": "1708271201536210150",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -3244,8 +3253,8 @@ jsonstr = """
         "pid": "1708271201504590139",
         "id": ""
     },
-
-
+   
+   
 
     {
         "id_title": "",
@@ -3393,14 +3402,14 @@ jsonstr = """
         "key_words": "经济开发区",
         "pid": "1708271201504590139",
         "id": ""
-    },
+    }, 
       {
         "id_title": "",
         "pid_title": "政府招标",
         "key_words": "应急指挥中心",
         "pid": "1708271201504590139",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "政府招标",
@@ -3548,7 +3557,7 @@ jsonstr = """
         "pid": "1708271201504590139",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "政府招标",
@@ -3896,7 +3905,7 @@ jsonstr = """
         "pid": "1708271201504590139",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "政府招标",
@@ -4424,7 +4433,7 @@ jsonstr = """
         "key_words": "通信系统",
         "pid": "1708271201536210154",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "网络电信",
@@ -5029,7 +5038,7 @@ jsonstr = """
         "key_words": "采砂场",
         "pid": "1708271201504590142",
         "id": ""
-    },
+    },  
     {
         "id_title": "",
         "pid_title": "矿产能源",
@@ -5613,14 +5622,14 @@ jsonstr = """
         "key_words": "制药",
         "pid": "1708271201504590141",
         "id": ""
-    },
+    },  
     {
         "id_title": "",
         "pid_title": "医疗康养",
         "key_words": "度假村",
         "pid": "1708271201504590141",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "医疗康养",
@@ -5634,7 +5643,7 @@ jsonstr = """
         "key_words": "养生",
         "pid": "1708271201504590141",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "医疗康养",
@@ -6841,7 +6850,7 @@ jsonstr = """
         "key_words": "注册专利",
         "pid": "1708271201536210151",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "知识产权",
@@ -7203,7 +7212,7 @@ jsonstr = """
         "key_words": "果蔬",
         "pid": "1708271201504590143",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "农业水利",
@@ -7216,21 +7225,21 @@ jsonstr = """
         "key_words": "蚕桑",
         "pid": "1708271201504590143",
         "id": ""
-    },
+    }, 
      {
         "id_title": "",
         "pid_title": "农业水利",
         "key_words": "栽培",
         "pid": "1708271201504590143",
         "id": ""
-    },
+    },  
     {
         "id_title": "",
         "pid_title": "农业水利",
         "key_words": "育苗",
         "pid": "1708271201504590143",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "农业水利",
@@ -7572,7 +7581,7 @@ jsonstr = """
         "pid": "1708271201504590143",
         "id": ""
     },
-
+  
     {
         "id_title": "",
         "pid_title": "农业水利",
@@ -7671,7 +7680,7 @@ jsonstr = """
         "pid": "1708271201504590143",
         "id": ""
     },
-
+   
     {
         "id_title": "",
         "pid_title": "农业水利",
@@ -8466,7 +8475,7 @@ jsonstr = """
         "key_words": "电网",
         "pid": "1708271201536210156",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -8494,7 +8503,7 @@ jsonstr = """
         "key_words": "露营基地",
         "pid": "1708271201536210156",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -9990,7 +9999,7 @@ jsonstr = """
         "key_words": "监护仪",
         "pid": "1708271201504590144",
         "id": ""
-    },
+    }, 
     {
         "id_title": "",
         "pid_title": "先进制造",
@@ -13319,25 +13328,47 @@ business_id_1:"12_1,4_2" 商机分类的小类
 }
 """
 
+def business_predict(jsonstr,title,default_pid='1708271201536210157'):
 
-
-def business_predict(title,jsonstr = jsonstr,default_pid='1708271201536210157'):
     predict_pid =set()
     predict_id =set()
     json_ob=json.loads(jsonstr)
+    # print len(json_ob)
+    if title ==None:
+        title=""
+
     for jsob in json_ob:
         if jsob['key_words'] in title:
+             # print jsob['key_words']
              pid= jsob['pid']
+             # pid= jsob['pid_title']
              id= jsob['id']
              predict_pid.add(pid)
              predict_id.add(id)
+             # print  title ,"||关键词|",jsob['key_words'],"||分类|",jsob['pid_title']
+
     # print  len(predict_pid)
     if len(predict_pid)==0:
         predict_pid.add(default_pid)
+        print title
+
 
     # if len(predict_id) == 0:
     #     predict_id.add(default_pid)
     pid_str=','.join(predict_pid)
     id_str=','.join(predict_id)
+    predict_dic={"business_pid_1":pid_str,"business_id_1":id_str}
 
-    return {"business_pid_1":pid_str,"business_id_1":id_str}
+    # print  title,pid_str
+
+
+    return predict_dic
+
+# 链接数据库
+
+
+
+
+
+
+

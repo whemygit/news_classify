@@ -421,7 +421,7 @@ jsonstr="""
         "pid_title": "市政建设",
         "key_words": "污泥",
         "id": ""
-    }, 
+    },
     {
         "mypid": "2",
         "id_title": "",
@@ -3100,7 +3100,7 @@ jsonstr="""
         "pid_title": "农业水利",
         "key_words": "天然林",
         "id": "shui"
-    }, 
+    },
      {
         "mypid": "10",
         "id_title": "",
@@ -4935,7 +4935,7 @@ jsonstr="""
         "pid_title": "市政建设",
         "key_words": "其他环保设备",
         "id": ""
-    }, 
+    },
     {
         "mypid": "2",
         "id_title": "",
@@ -4969,7 +4969,7 @@ jsonstr="""
         "pid_title": "市政建设",
         "key_words": "科技园区",
         "id": ""
-    }, 
+    },
     {
         "mypid": "2",
         "id_title": "",
@@ -5301,7 +5301,7 @@ jsonstr="""
         "pid_title": "网络电信",
         "key_words": "软件",
         "id": ""
-    }, 
+    },
     {
         "mypid": "11",
         "id_title": "",
@@ -5310,7 +5310,7 @@ jsonstr="""
         "pid_title": "网络电信",
         "key_words": "笔记本",
         "id": ""
-    }, 
+    },
     {
         "mypid": "11",
         "id_title": "",
@@ -5625,7 +5625,7 @@ jsonstr="""
         "pid_title": "政府招标",
         "key_words": "政府采购",
         "id": ""
-    },  
+    },
     {
         "mypid": "1",
         "id_title": "",
@@ -5634,7 +5634,7 @@ jsonstr="""
         "pid_title": "政府招标",
         "key_words": "预警信息发布中心",
         "id": ""
-    }, 
+    },
     {
         "mypid": "1",
         "id_title": "",
@@ -5777,7 +5777,7 @@ jsonstr="""
         "pid_title": "市政建设",
         "key_words": "水厂",
         "id": ""
-    }, 
+    },
     {
         "mypid": "2",
         "id_title": "",
@@ -7504,8 +7504,8 @@ jsonstr="""
         "key_words": "诊断仪器",
         "id": ""
     },
-    
-    
+
+
     {
         "id_title": "",
         "pid_title": "工业制造",
@@ -7533,7 +7533,7 @@ jsonstr="""
         "key_words": "融资",
         "pid": "1708271201536210153",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "金融投资",
@@ -8030,7 +8030,7 @@ jsonstr="""
         "key_words": "码头",
         "pid": "1708271201536210150",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -10547,7 +10547,7 @@ jsonstr="""
         "key_words": "学生",
         "pid": "1708271201536210150",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -10555,9 +10555,9 @@ jsonstr="""
         "pid": "1708271201536210150",
         "id": ""
     },
-    
-    
-    
+
+
+
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -10613,7 +10613,7 @@ jsonstr="""
         "key_words": "司法局",
         "pid": "1708271201504590139",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "政府招标",
@@ -11261,7 +11261,7 @@ jsonstr="""
         "key_words": "煤厂",
         "pid": "1708271201504590142",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "矿产能源",
@@ -11352,7 +11352,7 @@ jsonstr="""
         "key_words": "污水再生",
         "pid": "1708271201536210150",
         "id": ""
-    }, 
+    },
     {
         "id_title": "",
         "pid_title": "市政建设",
@@ -11489,6 +11489,16 @@ with open('keywords.csv','w') as fw:
     writer.writeheader()
     for i in key_words_dict:
         writer.writerow({'classify_pid_title':i, 'classify_key_words': key_words_dict[i]})
+
+options={'fieldnames':{'source','area'},'delimiter':'\t'}
+with open('outer_city_source','r') as fr:
+    with open('source_dict','w') as fw:
+        reader=csv.DictReader(fr,**options)
+        for row in reader:
+            if row['area'].isupper():
+                row['area']=row['area'].title()
+            print row['source'],row['area']
+            fw.write(row['source']+'\t'+row['area']+'\n')
 
 
 

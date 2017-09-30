@@ -4,6 +4,7 @@ import requests
 import torndb
 import time
 import re
+import json
 
 import sys
 
@@ -72,8 +73,8 @@ date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
 
 
 def requests_post(data):
-    # resp = requests.post('http://192.168.0.225:8080/cityparlor-web/cityparlor/cityparlor/index/save', data=data)
-    resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/index/save', data=data)
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
+    # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)         #本地
     return resp
 
 
@@ -83,18 +84,23 @@ def change_is_resp():
     print res
 
 
-def requests_post_1(data):
-    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)
-    # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/add', data=data, headers=headers)
+def requests_post_shouye(data):
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/index/add', data=data,
+                         headers=headers)
     return resp
 
 
 def get_info(city):
-    # sql = """select * from news_data where area="%s" AND img_show is not NULL ORDER BY news_date DESC limit 1""" % city
-    sql = '''select * from _news_data where area="%s" AND news_date="%s" AND img_show is not NULL ORDER BY news_date DESC''' % (
+    sql = '''select * from _news_data where area="%s" AND news_date="%s" AND is_resp=0''' % (
     city, date_n)
-    # sql = '''select * from _news_data where area="%s" AND news_date="2017-06-03" AND img_show is not NULL ORDER BY news_date DESC''' % city
+    # sql='''select * from _news_data where area area="北京市"AND img_show is not NULL ORDER BY news_date DESC LIMIT 1;'''
+    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND is_resp=0 LIMIT 5;''' % (
+    city, date_n)
     res = db.query(sql)
+    res_rec=db.query(rec_newsid_sql)
+    newsid_rec_list=[]
+    for i in res_rec:
+        newsid_rec_list.append(i.get('newsid'))
     for r in res:
         d = dict()
         text = str(r.get('text')).replace(r'\n', '').replace('\\', '').replace('http', 'https').replace(
@@ -108,7 +114,6 @@ def get_info(city):
         d['area'] = get_area_code(r.get('area'))
         d['content'] = text
         d['counts'] = '0'
-        # d['createDate'] = str(r.get('news_date'))
         d['newsDesc'] = r.get('title')
         d['newsType'] = '1'
         img_show = r.get('img_show')
@@ -122,25 +127,31 @@ def get_info(city):
             else:
                 d['classify'] = 1
                 d['pics'] = img_show
-        # d['pics'] = ','.join([img for img in imgs])
         d['source'] = r.get('text_f')
         d['title'] = r.get('title')
         d['isTop'] = 0
         d['isEssential'] = 0
         d['typeId'] = '1708161038001960000'
         d['isRecommend'] = 0
-        resp = requests_post_1(d)
+        d['languageVersion'] = 'ZH'
+        resp = requests_post(d)
         print r.get('area'), resp.content
-        # retObj = json.loads(resp.content).get('retObj')
-        # d_1 = dict()
-        # d_1['area'] = get_area_code(r.get('area'))
-        # d_1['imageUrl'] = r.get('img_show')
-        # d_1['number'] = 3
-        # d_1['objId'] = retObj
-        # d_1['objType'] = 'news'
-        # d_1['title'] = r.get('title')
-        # resp = requests_post(d_1)
-        # print d_1['area'], r.get('area'), resp.content
+
+        # 推荐到首页
+        if r.get('newsid') in newsid_rec_list:
+            rec_data = {}
+            rec_data['area'] = d.get('area')
+            rec_data['title'] = d.get('title')
+            rec_data['source'] = d.get('source')
+            rec_data['isTop'] = 0
+            rec_data['isEssential'] = 0
+            rec_data['classify'] = d.get('classify')
+            rec_data['objId'] = json.loads(resp.content).get('retObj')
+            rec_data['objType'] = 'news'
+            rec_data['imageUrl'] = d.get('pics')
+            rec_data['languageVersion'] = d.get('languageVersion')
+            resp_shouye = requests_post_shouye(rec_data)
+            print resp_shouye.content, d.get('title'), 'shouyetuijian',rec_data.get('languageVersion')
 
 
 def get_area_code(city):
@@ -155,6 +166,4 @@ def get_area_code(city):
 if __name__ == '__main__':
     for _city in areas:
         get_info(_city)
-        # requests_post(data)
-        # get_area_code(_city)
     change_is_resp()
