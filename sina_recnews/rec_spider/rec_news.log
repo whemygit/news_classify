@@ -1,0 +1,8 @@
+Sat Sep 30 10:30:01 CST 2017
+/home/spider/rec_spider/auto_rec_news.sh: line 3: 25979 Killed                  python /home/spider/rec_spider/recommend_news_spider.py
+End
+0.003(s) elapsed
+
+Total being uploaded localfiles num: 0
+OK num:0, SKIP num:0, FAIL num:0
+None
