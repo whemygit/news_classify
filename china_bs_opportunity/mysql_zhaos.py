@@ -2,8 +2,8 @@
 # -- coding: utf-8 --
 import requests
 import pymysql
-import  re
-import  datetime
+import re
+import datetime
 from config import collect
 from classi import business_predict
 import time
@@ -129,7 +129,7 @@ def get_info():
         res = cur.fetchall()
         for bid,title,text_f,text,city, city_code , handling,tel , startDate, endDate,businessId,businessPid in res:
             try:
-                businessPid = business_predict(title, text)['business_pid_1']
+                businessPid = business_predict(title)['business_pid_1']
                 d = dict()
                 d['isNewRecord'] = 'true'
                 d['recommend'] = '0'

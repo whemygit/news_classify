@@ -159,12 +159,11 @@ def news_spider():
             else:
                 new_date=yesterday
             try:
-                new_content, imgs, img_show,new_source=news_detail_spider(url)
-                new_title=rec_news_dict.get(url)
+                new_title,new_content, imgs, img_show,new_source=news_detail_spider(url)
                 print new_title,new_date,url
                 yield new_title, new_date, new_source, new_content, imgs, img_show
             except:
-                print 'no news available'
+                print 'no news available',url
                 continue
 
 
@@ -174,15 +173,26 @@ def news_detail_spider(new_url):
     resp=requests.get(new_url)
     # print resp.content
     detail=etree.HTML(resp.content)
+    try:
+        new_title=detail.xpath('//*[@id="artibodyTitle"]/text()')[0]
+    except:
+        try:
+            new_title = detail.xpath('//*[@id="main_title"]/text()')[0]
+        except:
+            new_title = detail.xpath('//h1[@class="main-title"]/text()')[0]
     new_content = etree.tostring(detail.xpath('//*[@id="artibody"]')[0], xml_declaration=True,
                               encoding='utf-8')
     new_content=filter_tags(new_content)
     new_content = re.sub(r'<!--行情图 start-->[\s|\S]*?<!--行情图 end-->', '', new_content)
+    new_content = re.sub(r'<!-- 引文 start -->[\s|\S]*?<!-- 引文 end -->', '', new_content)
     new_content = re.sub(r'<!--轮播 start-->[\s|\S]*?<!--直播推荐 end-->', '', new_content)
+    new_content = re.sub(r'<!--港股大赛.*?start-->[\s|\S]*?<!--wapdump end-->', '', new_content)
+    new_content = re.sub(r'<!-- 新浪财经直播 推广轮播 start -->[\s|\S]*?<!-- 新浪财经直播 推广轮播 end-->', '', new_content)
     new_content = re.sub(r'<p>[\s|\S]*?lcsds_icon.jpg[\s|\S]*?</p>', '', new_content)
     new_content = re.sub(r'<div>[\s|\S]*?icon01.png[\s|\S]*?</div>', '', new_content)
     new_content = re.sub(r'<img src=[\s|\S].*?usstocks0108.png[\s|\S].*?>', '', new_content)
     new_content = re.sub(r'<div><p>进入【新浪财经股吧】讨论</p></div>', '', new_content)
+    new_content = re.sub(r'相关报道见.*?版', '', new_content)
     try:
         new_source=detail.xpath('//span[@class="source"]/a/text()')[0]
     except:
@@ -200,7 +210,7 @@ def news_detail_spider(new_url):
         img_show=['https://cityparlor.oss-cn-beijing.aliyuncs.com/news/img/' + src.split('/')[-1] for src in imgs][0]
     if not img_show:
         img_show = None
-    return new_content,imgs,img_show,new_source
+    return new_title,new_content,imgs,img_show,new_source
 
 
 def main():

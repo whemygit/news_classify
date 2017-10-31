@@ -5,6 +5,7 @@ import torndb
 import time
 import re
 import json
+from similarity_demo import similarityDemo
 import sys
 
 reload(sys)
@@ -437,54 +438,69 @@ def change_is_resp(newsid):
 
 def get_info():
     sql = '''select * from rec_news_data where is_resp=0;'''
+    # sql = '''select * from rec_news_data where news_date='2017-10-08';'''
     res = db.query(sql)
+    title_simi_test = similarityDemo()
     for r in res:
-        d=dict()
-        d['title']=r.get('title')
-        d['area'] = 0
-        for area in AREA_DICT.keys():
-            if '市' in area:
-                if area.encode('utf-8')[:-3] in r.get('title'):
+        # print r.get('title')
+        flag=title_simi_test.similarity(r.get('title'))
+        if flag==True:
+            # print 'qqqqqqq:',r.get('title')
+            d=dict()
+            d['title']=r.get('title')
+            d['area'] = 0
+            for area in AREA_DICT.keys():
+                if '市' in area:
+                    if area.encode('utf-8')[:-3] in r.get('title'):
+                        d['area'] = AREA_DICT.get(area)
+                if area in r.get('title'):
                     d['area'] = AREA_DICT.get(area)
-            if area in r.get('title'):
-                d['area'] = AREA_DICT.get(area)
-        d['newsDesc'] = r.get('title')
-        d['source'] = r.get('text_f')
-        d['content'] = r.get('text')
-        d['newsType'] = '1'
-        d['counts'] = '0'
-        d['languageVersion'] = 'ZH'
-        d['isRecommend'] = 1
-        img_show=r.get('img_show')
-        if img_show==None:
-            d['classify']=0
-        else:
-            img_show_len=len(img_show.split(','))
-            if img_show_len<=2:
-                d['classify']=2
-                d['pics']=img_show.split(',')[0]
+            d['newsDesc'] = r.get('title')
+            d['source'] = r.get('text_f')
+            d['content'] = r.get('text')
+            d['newsType'] = '1'
+            d['counts'] = '0'
+            d['languageVersion'] = 'ZH'
+            if u'十九大' in r.get('title'):
+                d['typeId'] = '1710230954253860000'
+            d['isRecommend'] = 1
+            img_show=r.get('img_show')
+            if img_show==None:
+                d['classify']=0
             else:
-                d['classify']=1
-                d['pics']=img_show
-        d['isTop'] = 0
-        d['isEssential'] = 0
-        resp = requests_post(d)
-        print resp.content,r.get('title')
+                img_show_len=len(img_show.split(','))
+                if img_show_len<=2:
+                    d['classify']=2
+                    d['pics']=img_show.split(',')[0]
+                else:
+                    d['classify']=1
+                    d['pics']=img_show
+            d['isTop'] = 0
+            d['isEssential'] = 0
+            resp = requests_post(d)
+            print resp.content,r.get('title')
 
-        #推荐到首页
-        rec_data={}
-        rec_data['area'] = d.get('area')
-        rec_data['title'] = d.get('title')
-        rec_data['source'] = d.get('source')
-        rec_data['isTop'] = 0
-        rec_data['isEssential'] = 0
-        rec_data['classify'] = d.get('classify')
-        rec_data['objId'] = json.loads(resp.content).get('retObj')
-        rec_data['objType'] = 'news'
-        rec_data['languageVersion'] = d.get('languageVersion')
-        rec_data['imageUrl'] = d.get('pics')
-        resp_shouye = requests_post_shouye(rec_data)
-        print resp_shouye.content,d.get('title'),'shouyetuijian',rec_data.get('area'),rec_data.get('languageVersion')
+            #推荐到首页
+            rec_data={}
+            rec_data['area'] = d.get('area')
+            rec_data['title'] = d.get('title')
+            rec_data['source'] = d.get('source')
+            rec_data['isTop'] = 0
+            rec_data['isEssential'] = 0
+            rec_data['classify'] = d.get('classify')
+            try:
+                rec_data['objId'] = json.loads(resp.content).get('retObj')
+            except ValueError:
+                news_id = r.get('newsid')
+                change_is_resp(news_id)
+                continue
+            rec_data['objType'] = 'news'
+            rec_data['languageVersion'] = d.get('languageVersion')
+            rec_data['imageUrl'] = d.get('pics')
+            resp_shouye = requests_post_shouye(rec_data)
+            print resp_shouye.content,d.get('title'),'shouyetuijian',rec_data.get('area'),rec_data.get('languageVersion')
+        else:
+            print 'replicate title:',d.get('title')
 
         news_id = r.get('newsid')
         change_is_resp(news_id)
