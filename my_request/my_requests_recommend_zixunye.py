@@ -444,7 +444,7 @@ def get_info():
     for r in res:
         # print r.get('title')
         flag=title_simi_test.similarity(r.get('title'))
-        if flag==True:
+        if flag is True:
             # print 'qqqqqqq:',r.get('title')
             d=dict()
             d['title']=r.get('title')
