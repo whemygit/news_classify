@@ -12,7 +12,6 @@ from gevent import monkey
 import time
 import torndb
 import MySQLdb
-import redis
 
 monkey.patch_all()
 
@@ -28,7 +27,13 @@ areas = ['北京市', '天津市', '上海市', '广州市', '深圳市',
          '济南市','青岛市','淄博市','郑州市',
          '长沙市','贵阳市','昆明市','兰州市',
          '乌鲁木齐市','合肥市','南宁市','海口市',
-         '西宁市','银川','宁波市','厦门市']
+         '西宁市','银川','宁波市','厦门市','雄安新区',
+         '肥城市', '胶州市', '即墨市', '龙口市',
+         '平阴', '荣成市', '新泰市', '诸城市', '邹城市',
+         '江西省','张家口市','三亚市','抚州市','赣州市',
+         '贵溪市','吉安市','景德镇市',
+         '九江市','南昌县','萍乡市','上饶市',
+         '新余市','宜春市','鹰潭市','樟树市']
 mysql = {
     "host": "119.57.93.42",
     "port": "3306",
@@ -64,9 +69,15 @@ except Exception, e:
 
 def fetch_page(url, proxies={}):
     try:
+        print url
         response = requests.get(url, timeout=10, headers=headers, proxies=proxies)
+    except requests.ConnectionError:
+        time.sleep(10)
+        try:
+            response = requests.get(url, timeout=10, headers=headers, proxies=proxies)
+        except Exception as e:
+            return None
     except Exception as e:
-        print e
         return None
     return response
 
@@ -134,7 +145,7 @@ def geturl(url):
         resp = fetch_page(url, proxies=proxies)
         res_j = json.loads(resp.content)
         res = res_j.get('data')
-    title_url = ['http://www.toutiao.com' + str(r.get('source_url')) + '/' for r in res]
+    title_url = ['http://www.toutiao.com' + str(r.get('source_url')) for r in res]
     return title_url
 
 
@@ -151,16 +162,9 @@ def replace_img(text, srcs):
     return text
 
 
-conn=redis.Redis()
 def parse(area, url):
     title_url = geturl(url)
     print date_n, url
-    for new_url in title_url:
-        if conn.exists(new_url):
-            title_url.remove(new_url)
-        else:
-            conn.set(new_url,1)
-            conn.expire(new_url,259200)
     jobs = [gevent.spawn(fetch_content, url) for url in title_url]
     gevent.joinall(jobs)
     for page in [job.value for job in jobs]:
@@ -192,22 +196,17 @@ def parse(area, url):
         if not img_show:
             img_show = None
         sql = r"""insert into _news_data (area, category_id, category_pid, title, news_date, text_f, img_show, text, em_teg) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        if conn.exists(t):
-            pass
-        else:
-            conn.set(t,2)
-            conn.expire(t,259200)
-            try:
-                res = db.insert(sql, area, category_id, category_pid, t, news_date, text_f, img_show, text, em_teg)
+        try:
+            res = db.insert(sql, area, category_id, category_pid, t, news_date, text_f, img_show, text, em_teg)
                 # res_sql = \
                 #     'delete from _news_data  where newsid in (select newsid from (select  max(newsid) as newsid,count(title)' \
                 #     ' as count from _news_data group by title having count > 1 order by count desc) as tab )'
                 # db.execute(res_sql)
-            except Exception as e:
-                print e
-            if imgs:
-                for i in imgs:
-                    yield i
+        except Exception as e:
+            print e
+        if imgs:
+            for i in imgs:
+                yield i
 
 
 def run():
@@ -217,7 +216,7 @@ def run():
             url = 'http://www.toutiao.com/search_content/?offset=0&format=json&keyword={area}&autoload=true&count=100&cur_tab=1'.format(
                 area=a)
             for i in parse(area, url):
-                fw.write(i + '\n')
+                fw.write('http:' + i + '\n')
 
 if __name__ == '__main__':
     run()

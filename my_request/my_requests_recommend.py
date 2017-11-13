@@ -10,19 +10,27 @@ import sys
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
-areas = ['北京市', '天津市', '上海市', '广州市', '深圳市',
-         '鞍山市', '阜新市', '锦州市', '铁岭市', '辽阳市',
-         '葫芦岛市', '营口市', '盘锦市', '沈阳市', '本溪市',
-         '朝阳市', '抚顺市', '大连市', '丹东市','哈尔滨市',
-         '龙岩市', '呼和浩特市', '阿坝藏族羌族自治州',
-         '长春市','南京市','武汉市','重庆市',
-         '成都市','西安市','石家庄市','太原市',
-         '唐山市','包头市','吉林市','齐齐哈尔市',
-         '徐州市','杭州市','福州市','南昌市',
-         '济南市','青岛市','淄博市','郑州市',
-         '长沙市','贵阳市','昆明市','兰州市',
-         '乌鲁木齐市','合肥市','南宁市','海口市',
-         '西宁市','银川','宁波市','厦门市','雄安新区']
+areas = ['北京', '天津', '上海', '广州', '深圳',
+         '鞍山', '阜新', '锦州', '铁岭', '辽阳',
+         '葫芦岛', '营口', '盘锦', '沈阳', '本溪',
+         '朝阳', '抚顺', '大连', '丹东','哈尔滨',
+         '龙岩', '呼和浩特', '阿坝藏族羌族自治州',
+         '长春','南京','武汉','重庆',
+         '成都','西安','石家庄','太原',
+         '唐山','包头','吉林','齐齐哈尔',
+         '徐州','杭州','福州','南昌',
+         '济南','青岛','淄博','郑州',
+         '长沙','贵阳','昆明','兰州',
+         '乌鲁木齐','合肥','南宁','海口',
+         '西宁','银川','宁波','厦门',
+         '雄安新区', '肥城', '胶州',
+         '即墨', '龙口', '平阴', '荣成',
+         '新泰', '诸城', '邹城',
+         '江西省', '张家口', '三亚', '抚州', '赣州',
+         '贵溪', '吉安', '景德镇',
+         '九江', '南昌县', '萍乡', '上饶',
+         '新余', '宜春', '鹰潭', '樟树']
+# areas = ['肥城', '胶州', '即墨', '龙口', '平阴', '荣成', '新泰', '诸城', '邹城']
 # mysql = {
 #     "host": "192.168.0.202",
 #     "port": "3306",
@@ -53,7 +61,7 @@ db = torndb.Connection(host=mysql.get('host'), database=mysql.get('database'),
                        password=mysql.get('password'), charset=mysql.get('charset'))
 
 date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
-
+#date_n = '2017-10-20'
 
 def requests_post(data):
     resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
@@ -73,11 +81,11 @@ def change_is_resp(newsid):
 
 
 def get_info(city):
-    sql = '''select * from _news_data where area="%s" AND news_date="%s" AND is_resp=0''' % (
-    city, date_n)
-    # sql='''select * from _news_data where area area="北京市"AND img_show is not NULL ORDER BY news_date DESC LIMIT 1;'''
-    rec_newsid_sql = '''select newsid from _news_data where area="%s" AND news_date="%s" AND is_resp=0 LIMIT 5;''' % (
-    city, date_n)
+    sql = '''select * from _news_data where area like "{city}%%" AND news_date="{date_n}" AND is_resp=0'''.format(
+    city=city, date_n=date_n)
+    # sql='''select * from _news_data where area area="北京"AND img_show is not NULL ORDER BY news_date DESC LIMIT 1;'''
+    rec_newsid_sql = '''select newsid from _news_data where area like "{city}%%" AND news_date="{date_n}" AND is_resp=0 LIMIT 5;'''.format(
+    city=city, date_n=date_n)
     res = db.query(sql)
     res_rec=db.query(rec_newsid_sql)
     newsid_rec_list=[]
@@ -93,7 +101,7 @@ def get_info(city):
                 _img = '<img src="' + img + '">'
                 reg = '<img src="%s".*?/>' % img
                 text = re.sub(reg, _img, text)
-        d['area'] = get_area_code(r.get('area'))
+        d['area'] = get_area_code(city)
         d['content'] = text
         d['counts'] = '0'
         d['newsDesc'] = r.get('title')
@@ -117,7 +125,7 @@ def get_info(city):
         d['isRecommend'] = 0
         d['languageVersion'] = 'ZH'
         resp = requests_post(d)
-        print r.get('area'), resp.content
+        print r.get('area'), d.get('area'), resp.content
 
         # 推荐到首页
         if r.get('newsid') in newsid_rec_list:
@@ -128,7 +136,12 @@ def get_info(city):
             rec_data['isTop'] = 0
             rec_data['isEssential'] = 0
             rec_data['classify'] = d.get('classify')
-            rec_data['objId'] = json.loads(resp.content).get('retObj')
+            try:
+                rec_data['objId'] = json.loads(resp.content).get('retObj')
+            except ValueError:
+                news_id = r.get('newsid')
+                change_is_resp(news_id)
+                continue
             rec_data['objType'] = 'news'
             rec_data['imageUrl'] = d.get('pics')
             rec_data['languageVersion'] = d.get('languageVersion')
@@ -139,7 +152,7 @@ def get_info(city):
 
 
 def get_area_code(city):
-    sql = """select name, code from t_area"""
+    sql = """select name, code from t_area where IsEnabled=1;"""
     res = db.query(sql)
     for r in res:
         area = r.get('name')

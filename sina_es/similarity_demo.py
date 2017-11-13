@@ -18,7 +18,7 @@ class similarityDemo():
         flag = True
         if len(self.raw_documents) == 0:
             self.raw_documents.append(querydata)
-            self.raw_documents.append(",;")                         #避免在只有两个特别相似的文本时，计算tfidf时出现误判。
+            self.raw_documents.append(",;")
             return flag
 
         # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.ERROR)
@@ -31,7 +31,6 @@ class similarityDemo():
 
         corpus_tfidf = tfidf[corpus]
 
-
         query = [text for text in jieba.cut(querydata)]
 
         vec_bow = dictionary.doc2bow(query)
@@ -43,7 +42,7 @@ class similarityDemo():
         # print  len(index.get_similarities(vec_tfidf))
         # for sim in index.get_similarities(vec_tfidf):
         for sim in index[vec_tfidf]:
-            if sim > 0.85:
+            if sim > 0.80:
                 # print sim
                 flag = False
             else:
