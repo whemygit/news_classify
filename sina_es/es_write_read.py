@@ -2,6 +2,7 @@
 # -- coding: utf-8 --
 import sys
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -13,6 +14,7 @@ class es_store():
             es.indices.create(index=index_name)
         self.index=index_name
         self.type=type_name
+        self.bulk_actions=[]
 
     def is_exist(self,title):
         exist_flag=False
@@ -29,25 +31,22 @@ class es_store():
         res = es.index(index=self.index, doc_type=self.type, body=doc_dict)
         print 'created:',res['created']
 
-    # def read_data(self):
-    #     res = es.search(index=self.index, doc_type=self.type, body={"query": {"match": {"resp": 0}}})
-    #     post_data=res["hits"]["hits"]
-    #     return post_data
+
+    def get_bulk_action(self,spider_dict):
+        resp_dict={"is_resp":0}
+        spider_dict.update(resp_dict)
+        self.bulk_actions.append({"_index":self.index,"_type":self.type,"_source":spider_dict})
+
+    def bulk_put_data(self,bulk_actions):
+        res = bulk(es, actions=bulk_actions)
+        print res[0]
 
     def read_data(self):
         res = es.search(index=self.index, doc_type=self.type, body={"query": {"constant_score": {"filter": {"term":{"is_resp": 0}}}}})
         post_data=res["hits"]["hits"]
         return post_data
 
-    # #使用示例
-    # def data_post(self):
-    #     '''
-    #     r['_source']返回要上传的字典
-    #     :return:
-    #     '''
-    #     # post_data=self.read_data()
-    #     for r in post_data:
-    #         post_dict=r['_source']
+
 
 
     def update_resp(self,id):

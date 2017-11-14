@@ -13,7 +13,10 @@ sys.setdefaultencoding("utf-8")
 
 today=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 yesterday=time.strftime('%Y-%m-%d',time.localtime(time.time()-86400))
-es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
+
+#首先实例化es
+# es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
+es_model=es_store(index_name="ts_index",type_name="ts_type")
 
 def filter_tags(htmlstr):
     """
@@ -158,8 +161,10 @@ def news_detail_spider(new_url):
 
     #根据标题判断新闻是否已经存在，存在则不再重复抓取
     title_exist_flag=es_model.is_exist(new_title)
-    # print 'flag',title_exist_flag
-    if title_exist_flag==False:
+    if title_exist_flag==True:
+        print "title already exist"
+        return title_exist_flag
+    else:
         new_content = etree.tostring(detail.xpath('//*[@id="artibody"]')[0], xml_declaration=True,
                                   encoding='utf-8')
         new_content=filter_tags(new_content)
@@ -193,29 +198,62 @@ def news_detail_spider(new_url):
         return new_title,new_content,imgs,img_show,new_source
 
 
-def main():
+# def main():
+#     '''
+#     逐条上传至es
+#     :return:
+#     '''
+#     spider_res=news_spider()
+#     spider_dict={}
+#     # 将抓取的数据存入es
+#     # with open('/home/spider/sina_rec_es/src', 'w ') as fw:
+#     with open('src', 'w ') as fw:
+#         for new_title, new_date, new_source, new_content, imgs, img_show in spider_res:
+#             spider_dict['title']=new_title
+#             spider_dict['source']=new_source
+#             spider_dict['content']=new_content
+#             spider_dict['img_show']=img_show
+#             spider_dict['new_date']=new_date
+#             es_model.put_data_es(spider_dict)
+#             print new_title,"store to es success"
+#             #保存图片地址
+#             for i in imgs:
+#                 if i.startswith('//'):
+#                     fw.write('http:'+i+'\n')
+#                 else:
+#                     fw.write(i+'\n')
+
+
+def bulk_main():
+    '''
+    bulk批次上传数据至es
+    :return:
+    '''
     spider_res=news_spider()
-    spider_dict={}
     # 将抓取的数据存入es
     # with open('/home/spider/sina_rec_es/src', 'w ') as fw:
     with open('src', 'w ') as fw:
         for new_title, new_date, new_source, new_content, imgs, img_show in spider_res:
-            spider_dict['is_resp']=0
+            spider_dict = {}
             spider_dict['title']=new_title
             spider_dict['source']=new_source
             spider_dict['content']=new_content
             spider_dict['img_show']=img_show
             spider_dict['new_date']=new_date
-            es_model.put_data_es(spider_dict)
-            print new_title,"store to es success"
             #保存图片地址
             for i in imgs:
                 if i.startswith('//'):
                     fw.write('http:'+i+'\n')
                 else:
                     fw.write(i+'\n')
+            es_model.get_bulk_action(spider_dict)
 
+    #批量放入
+    # print es_model.bulk_actions
+    es_model.bulk_put_data(es_model.bulk_actions)
 
 if __name__ == '__main__':
-    main()
+    bulk_main()
+    # main()
+
 

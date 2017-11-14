@@ -11,7 +11,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
+#首先实例化es
+# es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
+es_model=es_store(index_name="ts_index",type_name="ts_type")
 
 AREA_DICT = {
     '黄冈市': '421100',
@@ -416,7 +418,6 @@ def post_and_cresp():
     for query_data in post_data:
         r=query_data['_source']
         flag=title_simi_test.similarity(r.get('title'))
-        print r.get('title'),flag,query_data.get('_id')
         if flag is True:
             d=dict()
             d['title']=r.get('title')
@@ -479,7 +480,4 @@ def post_and_cresp():
 
 if __name__ == '__main__':
     post_and_cresp()
-
-
-
 
