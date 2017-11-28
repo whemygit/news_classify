@@ -6,7 +6,9 @@ from elasticsearch.helpers import bulk
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
-es = Elasticsearch()
+
+# es = Elasticsearch()
+es = Elasticsearch(hosts=["192.168.1.98:9200","192.168.1.26:9200","192.168.1.103:9200"])
 
 class es_store():
     def __init__(self,index_name,type_name):
@@ -55,7 +57,6 @@ class es_store():
         :param id: for hit in self.post_data,id=hit["_id"]
         :return:
         '''
-        es=Elasticsearch()
         res = es.update(index=self.index, doc_type=self.type, id=id, body={"doc": {"is_resp": 1}})
         print res['result']
 

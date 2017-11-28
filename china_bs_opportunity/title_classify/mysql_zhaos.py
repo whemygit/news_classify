@@ -5,8 +5,7 @@ import pymysql
 import re
 import datetime
 from config import collect
-from classi import business_predict
-from classi import get_money
+from classi import business_predict,get_money,is_recommend,is_full_recommend
 import time
 import json
 
@@ -122,9 +121,9 @@ def get_title_area(title):
 
 def get_info():
 
-    for city, code in get_area_code():
-        sql = '''select * from business_opportunity_chinabs where city="{city}" and startDate like "{date}" ORDER BY startDate DESC'''.format(
-        city=city, date=date_n)
+    for i in get_area_code():
+        sql = '''select * from business_opportunity_chinabs where city like"%{city}%" and startDate like "{date}" ORDER BY startDate DESC'''.format(
+        city=i[0][0], date=date_n)
         # sql = '''select * from business_opportunity_chinabs where startDate like "{date}"'''.format(date='2017-09-18')
         cur.execute(sql)
         res = cur.fetchall()
@@ -135,7 +134,7 @@ def get_info():
                 d['isNewRecord'] = 'true'
                 d['recommend'] = '0'
                 d['businessPid'] = businessPid
-                d['cityCode'] = code
+                d['cityCode'] = i[0][1]
                 d['content'] = filter_tags(text)
                 d['businessName'] = ''
                 d['linkurl'] = handling
@@ -146,11 +145,16 @@ def get_info():
                 d['tel'] = tel
                 d['title'] = title
                 d['price'] = get_money(d['content'])
-                get_up_resp(d)
-                print (d['title'])
-                print (d['businessPid'])
+                d['recommend'] = '0'
+                rec_flag=is_recommend(city_name=city,price=d['price'],title=title)
+                if rec_flag==1:
+                    d['recommend'] = '1'
 
-                
+                is_rec_flag=is_full_recommend(price=d['price'],title=title)
+                if is_rec_flag==1:
+                    d['recommend'] = '1'
+                get_up_resp(d)
+                print (city,d['title'],d['businessPid'],'is_recommend',d['recommend'],d['price'])
             except Exception as e:
                 raise e
                 print(123)
@@ -158,10 +162,14 @@ def get_info():
 
 #获取城市状态码
 def get_area_code():
-    sql1 = r"""select name, code from t_area where name in (SELECT DISTINCT(city) from """+collect['table']+""")"""
+    sql1 = r"""SELECT DISTINCT(city) from business_opportunity_chinabs where startDate like '{date}'""".format(date=date_n)
     cur.execute(sql1)
     res = cur.fetchall()
-    return res
+    for i in res:
+        sql2 = r"""select name, code from t_area where name = '""" +str(i[0]).replace('市','')+"""'"""
+        cur.execute(sql2)
+        res1 = cur.fetchall()
+        yield res1
 
 
 def get_up_resp(data):

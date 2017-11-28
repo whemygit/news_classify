@@ -6,6 +6,7 @@ import re
 import datetime
 from config import collect
 from classi import business_predict
+from classi import get_money
 import time
 import json
 
@@ -144,6 +145,7 @@ def get_info():
                 d['endDate'] = endDate
                 d['tel'] = tel
                 d['title'] = title
+                d['price'] = get_money(d['content'])
                 get_up_resp(d)
                 print (d['title'])
                 print (d['businessPid'])

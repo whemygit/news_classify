@@ -15,8 +15,7 @@ today=time.strftime('%Y-%m-%d',time.localtime(time.time()))
 yesterday=time.strftime('%Y-%m-%d',time.localtime(time.time()-86400))
 
 #首先实例化es
-# es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
-es_model=es_store(index_name="ts_index",type_name="ts_type")
+es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
 
 def filter_tags(htmlstr):
     """
@@ -51,8 +50,8 @@ def replace_img(text, srcs):
 
 
 def news_cut_outstop(news_text):
-    # stopwd=[line.strip().decode('utf-8') for line in open('/home/spider/sina_rec_es/stopw.txt','r').readlines()]
-    stopwd = [line.strip().decode('utf-8') for line in open('stopw.txt', 'r').readlines()]
+    stopwd=[line.strip().decode('utf-8') for line in open('/home/spider/sina_rec_es/stopw.txt','r').readlines()]
+    # stopwd = [line.strip().decode('utf-8') for line in open('stopw.txt', 'r').readlines()]
     news_text=news_text.replace('\t', '').replace('\n', '').replace(' ', '').replace('，', '')
     seg_list=jieba.cut(news_text,cut_all=False)
     seg_list_outstop=[w for w in seg_list if w not in stopwd]
@@ -231,8 +230,8 @@ def bulk_main():
     '''
     spider_res=news_spider()
     # 将抓取的数据存入es
-    # with open('/home/spider/sina_rec_es/src', 'w ') as fw:
-    with open('src', 'w ') as fw:
+    with open('/home/spider/sina_rec_es/src', 'w ') as fw:
+    # with open('src', 'w ') as fw:
         for new_title, new_date, new_source, new_content, imgs, img_show in spider_res:
             spider_dict = {}
             spider_dict['title']=new_title
@@ -246,6 +245,7 @@ def bulk_main():
                     fw.write('http:'+i+'\n')
                 else:
                     fw.write(i+'\n')
+            #获取bulk_actons
             es_model.get_bulk_action(spider_dict)
 
     #批量放入

@@ -12,8 +12,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 #首先实例化es
-# es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
-es_model=es_store(index_name="ts_index",type_name="ts_type")
+es_model=es_store(index_name="sina_news",type_name="sina_news_rec")
 
 AREA_DICT = {
     '黄冈市': '421100',
@@ -400,16 +399,16 @@ headers = {
 date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
 
 def requests_post(data):
-    # resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
-    resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)         #本地
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data,headers=headers)  # 服务器
+    # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/save', data=data, headers=headers)         #本地
     return resp
 
 
 def requests_post_shouye(data):
-    # resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/index/add', data=data,
-    #                      headers=headers)   #服务器
-    resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/index/add', data=data,
-                         headers=headers)  # 本地
+    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/index/add', data=data,
+                         headers=headers)   #服务器
+    # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/index/add', data=data,
+    #                      headers=headers)  # 本地
     return resp
 
 def post_and_cresp():
@@ -419,6 +418,7 @@ def post_and_cresp():
         r=query_data['_source']
         flag=title_simi_test.similarity(r.get('title'))
         if flag is True:
+            print r.get('title'),query_data['_id']
             d=dict()
             d['title']=r.get('title')
             d['area'] = 0
