@@ -22,12 +22,21 @@ today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
 yesterday = str(yesterday)
 
+# mysql = {
+#     "host": "117.78.60.108",
+#     "port": "3306",
+#     "database": "cityparlor",
+#     "password": "123456",
+#     "user": "es",
+#     "charset": "utf8"
+# }
+
 mysql = {
-    "host": "49.4.6.196",
+    "host": "localhost",
     "port": "3306",
     "database": "cityparlor",
     "password": "123456",
-    "user": "es",
+    "user": "root",
     "charset": "utf8"
 }
 
@@ -44,47 +53,49 @@ def _format_addr(s):
 
 def get_data():
     news_data='''
-            select * from (select b.title,
-            a.counts
-            from (
-            SELECT
-            type_id,
-            count(0) counts
-            FROM
-             cityparlor.t_top_news
-             where date(create_date) >= date_sub(curdate(),interval 1 day)
-             and type_id is not null and type_id  !=''
-             and type_id  !='1708161038001960000'
-             and  is_recommend ='0'
-             and type_id !=0
-             and type_id !='1709071235082790070'
-             and type_id !='1709111209558500023'
-             and type_id !='1711021243522870078'
-             and type_id !='1711101216056640064'
-             group by type_id) a
-             left join
-             (
-             SELECT
-             id,
-             title
-             FROM cityparlor.t_top_type) b
-             on a.type_id =b.id) c
-             union all
-             SELECT  "首页推荐",
-             count(0) counts
-             FROM
-             cityparlor.t_index_setting
-             where
-             date(create_date) >= date_sub(curdate(),interval 1 day)
-             union all
-             SELECT
-             '推荐' ,
-             count(0) counts
-             FROM
-             cityparlor.t_top_news
-             where date(create_date) >= date_sub(curdate(),interval 1 day)
-             and
-             type_id is null and is_recommend ='1';'''
+        SELECT * FROM (SELECT
+        b.title,
+        a.language,
+        a.counts
+        FROM (
+        SELECT
+        type_id,
+        CASE language_version
+        WHEN 'EN' THEN '英文'
+        WHEN 'ZH' THEN '中文'
+        END AS language,
+        COUNT(0) counts
+        FROM
+        cityparlor.t_top_news
+        WHERE DATE(create_date) >= DATE_SUB(curdate(),INTERVAL 1 DAY)
+        AND type_id IS NOT NULL AND type_id  !=''
+        AND type_id  !='1708161038001960000'
+        AND  IS_recommend ='0'
+        AND type_id !=0
+        AND type_id !='1709071235082790070'
+        AND type_id !='1709111209558500023'
+        AND type_id !='1711021243522870078'
+        AND type_id !='1711101216056640064'
+        GROUP BY language_version ,type_id ) a
+        LEFT JOIN
+        (
+        SELECT
+        id,
+        title
+        FROM cityparlor.t_top_type) b
+        ON a.type_id =b.id) c
+        UNION ALL
+        SELECT
+        '推荐' ,
+        CASE language_version
+        WHEN 'EN' THEN '英文'
+        WHEN 'ZH' THEN '中文'
+        END AS language,
+        COUNT(0) counts
+        FROM
+        cityparlor.t_top_news
+        WHERE DATE(create_date) >= DATE_SUB(curdate(),INTERVAL 1 DAY)
+        AND type_id IS null AND IS_recommend ='1';'''
 
     res_sql = db.query(news_data)
     for r in res_sql:
@@ -131,10 +142,14 @@ def get_sdyd_news_data():
             WHEN 'entertainment' THEN '娱道'
             WHEN 'washington' THEN '商道'
             END AS fun,
+            CASE language_version
+            WHEN 'EN' THEN '英文'
+            WHEN 'ZH' THEN '中文'
+            END AS language,
             count(0)
             FROM `t_channel_news`
             WHERE date(create_date) >= date_sub(curdate(),interval 1 day)
-            GROUP BY fun;'''
+            GROUP BY fun ,language_version;'''
 
     res_sql = db.query(sdyd_news_data)
     for r in res_sql:
@@ -143,7 +158,9 @@ def get_sdyd_news_data():
 
 def get_wenzh_news_data():
     wenzh_news_data='''
-            SELECT
+            SELECT *
+            FROM
+            (SELECT
             c.name,
             d.title,
             c.language,
@@ -178,7 +195,8 @@ def get_wenzh_news_data():
             FROM `t_area` )b
             ON a.area=b.code ) c
             JOIN (SELECT id,title  FROM t_all_type) d
-            ON c.id =d.id;'''
+            ON c.id =d.id) e
+            WHERE language is not Null;'''
 
     res_sql = db.query(wenzh_news_data)
     for r in res_sql:
@@ -227,13 +245,18 @@ def get_sjzx_data():
         yield r
 
 if __name__ == '__main__':
+    res_header='数据更新汇总情况如下：'+ '\n'
+
+
     res ='****************************************************************************************************************'
     res+='\n'+'分类新闻抓取情况如下：'+'\n'
     sums=0
     for r in get_data():
         sums += r.get('counts')
-        res+=r.get('title')+':'+str(r.get('counts'))+'条'+'\n'
+        # print r,r.keys()
+        res+=r.get('title')+':'+r.get('language')+'--' +str(r.get('counts'))+'条'+'\n'
     res += '----------------------------' + '分类新闻抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res_header += '分类新闻抓取总量：' + str(sums) + '条'+ '\n'
 
 
     res+='\n'+'****************************************************************************************************************'
@@ -242,7 +265,8 @@ if __name__ == '__main__':
     for r in get_city_news_data():
         sums+=r.get('counts')
         res+= r.get('city')+':'+r.get('language')+'--' + str(r.get('counts'))+'条'+'\n'
-    res += '----------------------------' + '中英文新闻抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res += '----------------------------' + '中英文本地新闻抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res_header += '中英文本地新闻抓取总量：' + str(sums) + '条'+ '\n'
 
     res += '\n' + '****************************************************************************************************************'
     res += '\n' + '商道娱道资讯抓取情况如下：' + '\n'
@@ -250,8 +274,9 @@ if __name__ == '__main__':
     for r in get_sdyd_news_data():
         # print r,r.keys()
         sums+=r.get('count(0)')
-        res+= r.get('fun')+':'+str(r.get('count(0)'))+'条'+'\n'
+        res+= r.get('fun')+':'+r.get('language')+'--'+str(r.get('count(0)'))+'条'+'\n'
     res += '----------------------------' + '商道娱道资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res_header += '商道娱道资讯抓取总量：' + str(sums) + '条' + '\n'
 
     res += '\n' + '****************************************************************************************************************'
     res += '\n' + '各城市中英文问政资讯抓取情况如下：' + '\n'
@@ -261,6 +286,7 @@ if __name__ == '__main__':
         # print r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))
         res+= r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))+'条'+'\n'
     res += '----------------------------' + '问政资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res_header += '问政资讯抓取总量：' + str(sums) + '条' + '\n'
 
     res += '\n' + '****************************************************************************************************************'
     res += '\n' + '各城市商机项目抓取情况如下：' + '\n'
@@ -269,6 +295,7 @@ if __name__ == '__main__':
         sums+=r.get('counts')
         res+= r.get('name')+':'+str(r.get('counts'))+'条'+'\n'
     res+='----------------------------'+'商机项目抓取总量：'+str(sums)+'条'+'----------------------------' + '\n'
+    res_header += '商机项目抓取总量：'+str(sums)+'条' + '\n'
 
     res += '\n' + '****************************************************************************************************************'
     res += '\n' + '商机资讯抓取情况如下：' + '\n'
@@ -278,25 +305,26 @@ if __name__ == '__main__':
         # print r,r.keys(),sums
         res += r.get('language') + ':' + str(r.get('counts')) + '条' + '\n'
     res += '----------------------------' + '商机资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
+    res_header += '商机资讯抓取总量：' + str(sums) + '条' + '\n'
+
+    res=res_header+'\n'+'\n'+res
     print res
 
 
+    from_addr = 'big-data@loongscity.com'
+    password = '\u82CF\u742A'
+    # to_addr = ['luxingdong2008@126.com','sage4571@163.com','1339296847@qq.com','whemy25@163.com']
+    to_addr = ['sage4571@163.com', '1339296847@qq.com', 'whemy25@163.com']
+    smtp_server = 'smtp.mxhichina.com'
+    msg = MIMEText(res, 'plain', 'utf-8')
+    msg['From'] = _format_addr(u'爬虫服务器 <%s>' % from_addr)
+    # msg['To'] = _format_addr(u'陆总 <%s>' % to_addr[0])+',' +_format_addr(u'suqi <%s>' % to_addr[1])+',' +_format_addr(u'zhujialiang <%s>' % to_addr[2])+',' +_format_addr(u'wanghemin <%s>' % to_addr[3])
+    msg['To'] = _format_addr(u'suqi <%s>' % to_addr[0]) + ',' + _format_addr(u'zhujialiang <%s>' % to_addr[1]) + ',' + _format_addr(u'wanghemin <%s>' % to_addr[2])
 
-    # from_addr = 'big-data@loongscity.com'
-    # password = '\u82CF\u742A'
-    # to_addr = ['jiabei5212006@126.com']
-    # #to_addr = ['wlw9649@163.com']
-    # smtp_server = 'smtp.mxhichina.com'
-    # # smtp_server = 'smtp.qq.com'
-    # msg = MIMEText(res, 'plain', 'utf-8')
-    # msg['From'] = _format_addr(u'爬虫服务器 <%s>' % from_addr)
-    # msg['To'] = _format_addr(u'wanghemin <%s>' % to_addr[0])
-    # #msg['To'] = _format_addr(u'吴乐伟 <%s>' % to_addr[0])
-    #
-    # msg['Subject'] = Header(u'昨日数据统计结果信息……', 'utf-8').encode()
-    #
-    # server = smtplib.SMTP(smtp_server, 25)
-    # server.set_debuglevel(1)
-    # server.login(from_addr, password)
-    # server.sendmail(from_addr, to_addr, msg.as_string())
-    # server.quit()
+    msg['Subject'] = Header(yesterday+u' 数据更新信息', 'utf-8').encode()
+
+    server = smtplib.SMTP(smtp_server, 25)
+    server.set_debuglevel(1)
+    server.login(from_addr, password)
+    server.sendmail(from_addr, to_addr, msg.as_string())
+    server.quit()
