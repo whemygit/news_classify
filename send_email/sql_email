@@ -1,0 +1,214 @@
+SELECT * FROM (SELECT
+b.title,
+a.language,
+a.counts
+FROM (
+SELECT
+type_id,
+CASE 
+WHEN language_version='EN' THEN '英文'
+WHEN language_version='ZH' THEN '中文'
+ELSE  concat('语种未匹配到:',language_version)
+END AS language,
+COUNT(0) counts
+FROM
+cityparlor.t_top_news
+WHERE DATE(create_date) >= DATE_SUB(curdate(),INTERVAL 1 DAY)
+AND type_id IS NOT NULL AND type_id  !=''
+AND type_id  !='1708161038001960000'
+AND  IS_recommend ='0'
+AND type_id !=0
+AND type_id !='1709071235082790070'
+AND type_id !='1709111209558500023'
+AND type_id !='1711021243522870078'
+AND type_id !='1711101216056640064'
+GROUP BY language_version ,type_id ) a
+LEFT JOIN
+(
+SELECT
+id,
+title
+FROM cityparlor.t_top_type) b
+ON a.type_id =b.id) c
+UNION ALL
+SELECT
+'推荐' ,
+CASE language_version
+WHEN 'EN' THEN '英文'
+WHEN 'ZH' THEN '中文'
+END AS language,
+COUNT(0) counts
+FROM
+cityparlor.t_top_news
+WHERE DATE(create_date) >= DATE_SUB(curdate(),INTERVAL 1 DAY)
+AND type_id IS null AND IS_recommend ='1';
+
+
+
+
+select c.city,
+case
+ when d.language_name is null then concat('语种未匹配到:',c.language) 
+ else d.language_name
+ end AS language
+ ,c.counts from (select b.city,
+a.area,
+a.language,
+counts  from (SELECT area ,
+language_version language,
+count(0) counts  
+FROM
+cityparlor.t_top_news 
+where  
+date (create_date) >= date_sub(curdate(),interval 1 day) and 
+area !=''
+and type_id ='1708161038001960000'
+group by area ,language_version) a 
+ left join 
+(select 
+code ,
+name city
+from cityparlor.t_area) b
+on a.area=b.code) c 
+ left join 
+(SELECT language_name,
+language_code FROM cityparlor.t_language_code) d 
+on c.language=d.language_code
+ ;
+
+
+商道娱道
+SELECT 
+CASE fun 
+WHEN 'entertainment' THEN '娱道'
+WHEN 'washington' THEN '商道'
+END AS fun,
+ count(0)
+ FROM `t_channel_news` 
+ WHERE date(create_date) >= date_sub(curdate(),interval 1 day) 
+GROUP BY fun;
+
+
+
+问政
+FROM  
+(SELECT 
+ p_type_id,
+area,
+case language_version
+when 'EN' then '英文'
+when 'ZH' then '中文'
+end as language
+,
+count(0) counts
+FROM `t_all_news` 
+WHERE 
+date(create_date) >= date_sub(curdate(),interval 1 day) 
+AND fun ='town_news' 
+AND p_type_id is not null
+GROUP BY p_type_id, area,language_version ) a 
+JOIN
+( 
+SELECT 
+code,
+name 
+FROM `t_area` )b
+ON a.area=b.code ) c
+JOIN (SELECT id,title  FROM t_all_type) d
+ON c.id =d.id;
+
+商机项目
+SELECT * FROM 
+(SELECT 
+b.name,
+a.counts
+FROM (SELECT 
+city_code,
+count(0) counts
+FROM cityparlor.t_opportunity_project  
+WHERE date(create_date) >= date_sub(curdate(),interval 1 day)
+AND city_code is not Null
+GROUP BY city_code) a 
+LEFT JOIN (SELECT 
+code,
+name 
+FROM cityparlor.t_area) b 
+on a.city_code =b.code) c WHERE name is not Null;
+
+
+公益资讯
+SELECT 
+c.name,
+c.language,
+c.counts
+FROM
+(SELECT 
+a.p_type_id id ,
+b.name,
+a.language,
+a.counts
+FROM  
+(SELECT 
+ p_type_id,
+area,
+case language_version
+when 'EN' then '英文'
+when 'ZH' then '中文'
+ end as language
+,
+count(0) counts
+FROM cityparlor.t_all_news 
+WHERE 
+date(create_date) = date_sub(curdate(),interval 1 day) 
+AND fun ='commonweal_news' 
+AND p_type_id is not null
+AND del_flag=0
+GROUP BY p_type_id, area,language_version ) a 
+JOIN
+( 
+SELECT 
+code,
+name 
+FROM cityparlor.t_area )b
+ON a.area=b.code ) c;
+
+
+市长在线
+SELECT 
+d.city_name,
+c.name,
+c.language,
+c.counts FROM 
+(SELECT 
+b.name,
+b.area,
+a.language,
+a.counts FROM 
+(SELECT 
+personage_id,
+CASE
+WHEN language_version='EN' THEN '英文'
+WHEN language_version='ZH' THEN '中文'
+ELSE language_version
+END AS language,
+count(0) counts
+FROM cityparlor.t_all_news 
+WHERE DATE(create_date) >= DATE_SUB(CURRENT_TIMESTAMP(),INTERVAL 1 DAY) 
+AND del_flag=0
+AND fun ='town_mayor_dynamic' 
+GROUP BY personage_id )  a LEFT JOIN 
+(SELECT 
+id,
+name,
+area 
+FROM cityparlor.t_town_mayor 
+WHERE del_flag=0)b 
+ON a.personage_id=b.id )c 
+LEFT OUTER JOIN  
+(SELECT 
+code,
+name city_name 
+FROM t_area 
+WHERE del_flag=0) d 
+ON c.area=d.code
+ORDER BY city_name DESC;

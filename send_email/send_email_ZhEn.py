@@ -252,9 +252,12 @@ if __name__ == '__main__':
     res+='\n'+'分类新闻抓取情况如下：'+'\n'
     sums=0
     for r in get_data():
-        sums += r.get('counts')
-        # print r,r.keys()
-        res+=r.get('title')+':'+r.get('language')+'--' +str(r.get('counts'))+'条'+'\n'
+        try:
+            sums += r.get('counts')
+            # print r,r.keys()
+            res+=r.get('title')+':'+r.get('language')+'--' +str(r.get('counts'))+'条'+'\n'
+        except:
+            continue
     res += '----------------------------' + '分类新闻抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
     res_header += '分类新闻抓取总量：' + str(sums) + '条'+ '\n'
 
@@ -263,8 +266,11 @@ if __name__ == '__main__':
     res+='\n'+'各城市中英文新闻抓取情况如下：'+'\n'
     sums=0
     for r in get_city_news_data():
-        sums+=r.get('counts')
-        res+= r.get('city')+':'+r.get('language')+'--' + str(r.get('counts'))+'条'+'\n'
+        try:
+            sums+=r.get('counts')
+            res+= r.get('city')+':'+r.get('language')+'--' + str(r.get('counts'))+'条'+'\n'
+        except:
+            continue
     res += '----------------------------' + '中英文本地新闻抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
     res_header += '中英文本地新闻抓取总量：' + str(sums) + '条'+ '\n'
 
@@ -272,9 +278,12 @@ if __name__ == '__main__':
     res += '\n' + '商道娱道资讯抓取情况如下：' + '\n'
     sums=0
     for r in get_sdyd_news_data():
-        # print r,r.keys()
-        sums+=r.get('count(0)')
-        res+= r.get('fun')+':'+r.get('language')+'--'+str(r.get('count(0)'))+'条'+'\n'
+        try:
+            # print r,r.keys()
+            sums+=r.get('count(0)')
+            res+= r.get('fun')+':'+r.get('language')+'--'+str(r.get('count(0)'))+'条'+'\n'
+        except:
+            continue
     res += '----------------------------' + '商道娱道资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
     res_header += '商道娱道资讯抓取总量：' + str(sums) + '条' + '\n'
 
@@ -282,9 +291,12 @@ if __name__ == '__main__':
     res += '\n' + '各城市中英文问政资讯抓取情况如下：' + '\n'
     sums=0
     for r in get_wenzh_news_data():
-        sums+=r.get('counts')
-        # print r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))
-        res+= r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))+'条'+'\n'
+        try:
+            sums+=r.get('counts')
+            # print r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))
+            res+= r.get('name')+':'+r.get('title')+'--'+r.get('language')+'--'+str(r.get('counts'))+'条'+'\n'
+        except:
+            continue
     res += '----------------------------' + '问政资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
     res_header += '问政资讯抓取总量：' + str(sums) + '条' + '\n'
 
@@ -292,8 +304,11 @@ if __name__ == '__main__':
     res += '\n' + '各城市商机项目抓取情况如下：' + '\n'
     sums=0
     for r in get_sjxm_data():
-        sums+=r.get('counts')
-        res+= r.get('name')+':'+str(r.get('counts'))+'条'+'\n'
+        try:
+            sums+=r.get('counts')
+            res+= r.get('name')+':'+str(r.get('counts'))+'条'+'\n'
+        except:
+            continue
     res+='----------------------------'+'商机项目抓取总量：'+str(sums)+'条'+'----------------------------' + '\n'
     res_header += '商机项目抓取总量：'+str(sums)+'条' + '\n'
 
@@ -301,9 +316,12 @@ if __name__ == '__main__':
     res += '\n' + '商机资讯抓取情况如下：' + '\n'
     sums = 0
     for r in get_sjzx_data():
-        sums += r.get('counts')
-        # print r,r.keys(),sums
-        res += r.get('language') + ':' + str(r.get('counts')) + '条' + '\n'
+        try:
+            sums += r.get('counts')
+            # print r,r.keys(),sums
+            res += r.get('language') + ':' + str(r.get('counts')) + '条' + '\n'
+        except:
+            continue
     res += '----------------------------' + '商机资讯抓取总量：' + str(sums) + '条' + '----------------------------' + '\n'
     res_header += '商机资讯抓取总量：' + str(sums) + '条' + '\n'
 
@@ -313,13 +331,13 @@ if __name__ == '__main__':
 
     from_addr = 'big-data@loongscity.com'
     password = '\u82CF\u742A'
-    # to_addr = ['luxingdong2008@126.com','sage4571@163.com','1339296847@qq.com','whemy25@163.com']
-    to_addr = ['sage4571@163.com', '1339296847@qq.com', 'whemy25@163.com']
+    to_addr = ['luxingdong2008@126.com','sage4571@163.com','1339296847@qq.com','whemy25@163.com']
+    # to_addr = ['sage4571@163.com', '1339296847@qq.com', 'whemy25@163.com']
     smtp_server = 'smtp.mxhichina.com'
     msg = MIMEText(res, 'plain', 'utf-8')
     msg['From'] = _format_addr(u'爬虫服务器 <%s>' % from_addr)
-    # msg['To'] = _format_addr(u'陆总 <%s>' % to_addr[0])+',' +_format_addr(u'suqi <%s>' % to_addr[1])+',' +_format_addr(u'zhujialiang <%s>' % to_addr[2])+',' +_format_addr(u'wanghemin <%s>' % to_addr[3])
-    msg['To'] = _format_addr(u'suqi <%s>' % to_addr[0]) + ',' + _format_addr(u'zhujialiang <%s>' % to_addr[1]) + ',' + _format_addr(u'wanghemin <%s>' % to_addr[2])
+    msg['To'] = _format_addr(u'陆总 <%s>' % to_addr[0])+',' +_format_addr(u'suqi <%s>' % to_addr[1])+',' +_format_addr(u'zhujialiang <%s>' % to_addr[2])+',' +_format_addr(u'wanghemin <%s>' % to_addr[3])
+    # msg['To'] = _format_addr(u'suqi <%s>' % to_addr[0]) + ',' + _format_addr(u'zhujialiang <%s>' % to_addr[1]) + ',' + _format_addr(u'wanghemin <%s>' % to_addr[2])
 
     msg['Subject'] = Header(yesterday+u' 数据更新信息', 'utf-8').encode()
 
