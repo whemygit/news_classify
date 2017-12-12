@@ -57,6 +57,19 @@ def news_cut_outstop(news_text):
     seg_list_outstop=[w for w in seg_list if w not in stopwd]
     return seg_list_outstop
 
+def wangyi_title_segset():
+    main_url='http://www.163.com/'
+    title_xpath_rules='//div[@class="yaowen_news"]/div/ul/li/a/text()'
+    resp=requests.get(main_url)
+    detail=etree.HTML(resp.text)
+    yaowen_title_list=detail.xpath(title_xpath_rules)
+    key_words_list = []
+    for title in yaowen_title_list:
+        for t in news_cut_outstop(title):
+            if len(t) >= 2:
+                key_words_list.append(t)
+    keywords_set = set(key_words_list)
+    return keywords_set
 
 def souhu_title_segset():
     main_url='http://www.sohu.com/'
@@ -70,21 +83,6 @@ def souhu_title_segset():
             title_list.append(i.strip())
     key_words_list = []
     for title in title_list:
-        for t in news_cut_outstop(title):
-            if len(t) >= 2:
-                key_words_list.append(t)
-    keywords_set = set(key_words_list)
-    return keywords_set
-
-
-def wangyi_title_segset():
-    main_url='http://www.163.com/'
-    title_xpath_rules='//div[@class="yaowen_news"]/div/ul/li/a/text()'
-    resp=requests.get(main_url)
-    detail=etree.HTML(resp.text)
-    yaowen_title_list=detail.xpath(title_xpath_rules)
-    key_words_list = []
-    for title in yaowen_title_list:
         for t in news_cut_outstop(title):
             if len(t) >= 2:
                 key_words_list.append(t)
