@@ -449,7 +449,7 @@ def post_and_cresp():
                     d['classify']=1
                     d['pics']=img_show
             d['isTop'] = 0
-            d['isEssential'] = 0
+            d['isEssential'] = 0;
             resp = requests_post(d)
             print resp.content,r.get('title')
 

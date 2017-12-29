@@ -23,23 +23,23 @@ today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
 yesterday = str(yesterday)
 
-# mysql = {
-#     "host": "117.78.60.108",
-#     "port": "3306",
-#     "database": "cityparlor",
-#     "password": "123456",
-#     "user": "es",
-#     "charset": "utf8"
-# }
-
 mysql = {
-    "host": "localhost",
+    "host": "117.78.60.108",
     "port": "3306",
     "database": "cityparlor",
     "password": "123456",
-    "user": "root",
+    "user": "es",
     "charset": "utf8"
 }
+
+# mysql = {
+#     "host": "localhost",
+#     "port": "3306",
+#     "database": "cityparlor",
+#     "password": "123456",
+#     "user": "root",
+#     "charset": "utf8"
+# }
 
 date_n = time.strftime("%Y-%m-%d", time.localtime(time.time()))
 # date_n = yesterday
@@ -145,7 +145,7 @@ def get_sdyd_news_data():
     sdyd_news_data='''
             SELECT
             CASE fun
-            WHEN 'entertainment' THEN '娱道'
+            WHEN 'entertainment_news' THEN '娱道'
             WHEN 'washington' THEN '商道'
             END AS fun,
             CASE language_version
@@ -471,20 +471,36 @@ if __name__ == '__main__':
     print res
 
 
-    from_addr = 'big-data@loongscity.com'
-    password = '\u82CF\u742A'
-    to_addr = ['luxingdong2008@126.com','zengyi@loongs.cc','sage4571@163.com','1339296847@qq.com','whemy25@163.com']
-    # to_addr = ['sage4571@163.com', '1339296847@qq.com', 'whemy25@163.com']
-    smtp_server = 'smtp.mxhichina.com'
-    msg = MIMEText(res, 'plain', 'utf-8')
-    msg['From'] = _format_addr(u'爬虫服务器 <%s>' % from_addr)
-    msg['To'] = _format_addr(u'陆总 <%s>' % to_addr[0])+',' +_format_addr(u'zengyi <%s>' % to_addr[1])+',' +_format_addr(u'suqi <%s>' % to_addr[2])+',' +_format_addr(u'zhujialiang <%s>' % to_addr[3])+',' +_format_addr(u'wanghemin <%s>' % to_addr[4])
-    # msg['To'] = _format_addr(u'suqi <%s>' % to_addr[0]) + ',' + _format_addr(u'zhujialiang <%s>' % to_addr[1]) + ',' + _format_addr(u'wanghemin <%s>' % to_addr[2])
-
-    msg['Subject'] = Header(yesterday+u' 数据更新信息', 'utf-8').encode()
-
-    server = smtplib.SMTP(smtp_server, 25)
-    server.set_debuglevel(1)
-    server.login(from_addr, password)
-    server.sendmail(from_addr, to_addr, msg.as_string())
-    server.quit()
+    # from_addr = 'big-data@loongscity.com'
+    # password = '\u82CF\u742A'
+    # to_addr = ['luxingdong2008@126.com',
+    #            'zengyi@loongs.cc',
+    #            'sage4571@163.com',
+    #            '1339296847@qq.com',
+    #            'whemy25@163.com',
+    #            '1789981094@qq.com',
+    #            '2286635023@qq.com',
+    #            '2129219453@qq.com',
+    #            '1354867306@qq.com']
+    #
+    # smtp_server = 'smtp.mxhichina.com'
+    # msg = MIMEText(res, 'plain', 'utf-8')
+    # msg['From'] = _format_addr(u'爬虫服务器 <%s>' % from_addr)
+    # msg['To'] = _format_addr(u'陆总 <%s>' % to_addr[0])\
+    #             +',' +_format_addr(u'zengyi <%s>' % to_addr[1])\
+    #             +',' +_format_addr(u'suqi <%s>' % to_addr[2])\
+    #             +',' +_format_addr(u'zhujialiang <%s>' % to_addr[3])\
+    #             +',' +_format_addr(u'wanghemin <%s>' % to_addr[4])\
+    #             +',' +_format_addr(u'duwanqiu <%s>' % to_addr[5])\
+    #             +',' +_format_addr(u'wangqiuyang <%s>' % to_addr[6])\
+    #             +',' +_format_addr(u'sunyan <%s>' % to_addr[7])\
+    #             +',' +_format_addr(u'wangxuelan <%s>' % to_addr[8])
+    #
+    #
+    # msg['Subject'] = Header(yesterday+u' 数据更新信息', 'utf-8').encode()
+    #
+    # server = smtplib.SMTP(smtp_server, 25)
+    # server.set_debuglevel(1)
+    # server.login(from_addr, password)
+    # server.sendmail(from_addr, to_addr, msg.as_string())
+    # server.quit()
