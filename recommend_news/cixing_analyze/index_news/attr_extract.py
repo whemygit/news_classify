@@ -21,26 +21,22 @@ db = torndb.Connection(host=mysql.get('host'), database=mysql.get('database'),
                        password=mysql.get('password'), charset=mysql.get('charset'))
 
 
-query_sql='''SELECT title,source,content FROM t_top_news WHERE create_date LIKE '%%{date}%%' AND language_version='ZH' AND type_id ='1708161038001960000';'''.format(date='2017-12-27')
-# query_sql='''select a.title,b.content from
-# (select title ,obj_id from cityparlor.t_index_setting where language_version='ZH') a
-# join (select id ,content from cityparlor.t_top_news ) b on a.obj_id = b.id;'''
+# query_sql='''SELECT title,source,content FROM t_top_news WHERE create_date LIKE '%%{date}%%' AND language_version='ZH' AND type_id ='1708161038001960000';'''.format(date='2017-12-27')
+query_sql='''select a.title,b.content from
+(select title ,obj_id from cityparlor.t_index_setting where language_version='ZH') a
+join (select id ,content from cityparlor.t_top_news ) b on a.obj_id = b.id limit 10000;'''
 res_sql=db.query(query_sql)
 
 
-
-
-with open('D:/gitcode/news_classify/recommend_news/cixing_analyze/local_news/test_local_news','w') as fw:
+with open('test_index_news','w') as fw:
     for i in res_sql:
         try:
             title=i.get('title')
             content=i.get('content')
-            source=i.get('source')
             title_s=SnowNLP(title)
             content_s=SnowNLP(content)
             t_tag= title_s.tags
             title_write=title.decode()
-            source_write=source.decode()
             print title_write
             n_len=0
             v_len=0
@@ -68,7 +64,7 @@ with open('D:/gitcode/news_classify/recommend_news/cixing_analyze/local_news/tes
                     k_v_len+=1
             k_n_percent=k_n_len/float(len(keywords_tag_list))
             k_v_percent=k_v_len/float(len(keywords_tag_list))
-            fw.write(title_write+'\x01'+source_write+'\x01'+",".join(title_list)+'\x01'+','.join(title_tag_list)+'\x01'+str(n_percent)+'\x01'+str(v_percent)+'\x01'+",".join(key_words)+'\x01'+",".join(keywords_tag_list)+'\x01'+str(k_n_percent)+'\x01'+str(k_v_percent)+'\n')
+            fw.write(title_write+'\x01'+'source'+'\x01'+",".join(title_list)+'\x01'+','.join(title_tag_list)+'\x01'+str(n_percent)+'\x01'+str(v_percent)+'\x01'+",".join(key_words)+'\x01'+",".join(keywords_tag_list)+'\x01'+str(k_n_percent)+'\x01'+str(k_v_percent)+'\n')
         except:
             print "error:",title.decode()
 
