@@ -478,6 +478,10 @@ def post_and_cresp():
         #上传后将is_resp由0改为1
         es_model.update_resp(query_data.get('_id'))
 
+
+
+
+
 if __name__ == '__main__':
     post_and_cresp()
 
