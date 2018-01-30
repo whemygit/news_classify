@@ -55,7 +55,7 @@ class astronaut_topic_news():
 
     def is_report_flag(self,title):
         '''
-        根据新闻标题和新闻内容判别该新闻是否属于某一特定专题
+        根据新闻标题判别该新闻是否属于某一特定专题
         :param title:需要判别新闻的新闻标题
         :return:report_flag,True为属于该专题，False为不属于该专题
         '''

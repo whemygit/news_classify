@@ -63,9 +63,9 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
-    # res=test_data_get()
-    # for i in res:
-    #     title=i.get('title')
-    #     content=i.get('content')
-    #     print title,content
+    # test()
+    res=test_data_get()
+    for i in res:
+        title=i.get('title')
+        content=i.get('content')
+        print title,content

@@ -56,30 +56,38 @@ for i,j in enumerate(bow_corpus):
 
 print(doc_array)
 
+print doc_array[:,1]
+print sum(doc_array[:,0])
 
-
-vocablist=[]
+vocablist_dict={}
 for k,v in dictionary.items():
-    print(k,v,int(k),type(v))
-    vocablist.append(v)
-print(vocablist)
+    print k,v
+    vocablist_dict[v]=sum(doc_array[:,int(k)])
+for i,j in vocablist_dict.items():
+    print i,j
 
-vocab=tuple(vocablist)
-print(vocab)
+# vocablist=[]
+# for k,v in dictionary.items():
+#     print(k,v,int(k),type(v))
+#     vocablist.append(v)
+# print(vocablist)
 
-model = lda.LDA(n_topics=5, n_iter=1500, random_state=1)
-model.fit(doc_array)
-topic_word = model.topic_word_
-print(topic_word.shape)
-n_top_words = 3
-for i, topic_dist in enumerate(topic_word):
-    topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
-    print('Topic {}: {}'.format(i, ' '.join(topic_words)))
+# vocab=tuple(vocablist)
+# print(vocab)
 
-doc_topic = model.doc_topic_
-print(doc_topic.shape)
-# print(doc_topic)
-
-for n in range(10):
-    topic_most_pr = doc_topic[n].argmax()
-    print("doc:{} topic:{}".format(n, topic_most_pr))
+# model = lda.LDA(n_topics=5, n_iter=1500, random_state=1)
+# model.fit(doc_array)
+# topic_word = model.topic_word_
+# print(topic_word.shape)
+# n_top_words = 3
+# for i, topic_dist in enumerate(topic_word):
+#     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n_top_words + 1):-1]
+#     print('Topic {}: {}'.format(i, ' '.join(topic_words)))
+#
+# doc_topic = model.doc_topic_
+# print(doc_topic.shape)
+# # print(doc_topic)
+#
+# for n in range(10):
+#     topic_most_pr = doc_topic[n].argmax()
+#     print("doc:{} topic:{}".format(n, topic_most_pr))

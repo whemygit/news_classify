@@ -52,6 +52,10 @@ class LdaTopicWords():
                     line_list=line.strip().decode('utf-8').split('\t')
                     title = line_list[0]
                     content = line_list[1]
+                    content = re.sub('<.*?>', '', content)
+                    content = re.sub('\n', '', content)
+                    content = unescape(content)
+
                     yield title,content
                 except:
                     continue
@@ -77,8 +81,10 @@ class LdaTopicWords():
                 content_list_1=[]
                 for i in content_list:
                     # 是否去掉停用词
-                    # if i not in self.stopwd:
-                    content_list_1.append(i)
+                    if i in self.stopwd:
+                        continue
+                    else:
+                        content_list_1.append(i)
 
                 doc_list.append(content_list_1)
 
@@ -142,6 +148,8 @@ class LdaTopicWords():
 
 
 model=LdaTopicWords(data_source='sql')
+# for title,content in model.get_data_sql():
+#     print(title,content)
 # print(model.data_source)
 # print(model.stopwd)
 # print(model.doc_list)

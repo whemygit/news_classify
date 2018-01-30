@@ -6,21 +6,21 @@ import pymysql
 
 
 def get_report_id(keywd):
-    # mysql_params = {
-    #     "host": "117.78.60.108",
-    #     "port": 3306,
-    #     "database": "cityparlor",
-    #     "password": "123456",
-    #     "user": "es",
-    #     "charset": "utf8"}
-
     mysql_params = {
-        "host": "192.168.1.26",
+        "host": "117.78.60.108",
         "port": 3306,
         "database": "cityparlor",
         "password": "123456",
         "user": "es",
         "charset": "utf8"}
+
+    # mysql_params = {
+    #     "host": "192.168.1.26",
+    #     "port": 3306,
+    #     "database": "cityparlor",
+    #     "password": "123456",
+    #     "user": "es",
+    #     "charset": "utf8"}
 
 
     mysql = mysql_params
@@ -39,8 +39,8 @@ def get_report_id(keywd):
     return report_id
 
 def requests_post(data):
-    resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/edit', data=data)  # 服务器
-    # resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/edit', data=data)         #本地
+    # resp = requests.post('http://192.168.1.13:8080/cityparlor-web/cityparlor/cityparlor/top/news/edit', data=data)  # 服务器
+    resp = requests.post('http://117.78.41.235:8080/cityparlor-web/cityparlor/cityparlor/top/news/edit', data=data)         #本地
     return resp
 
 
