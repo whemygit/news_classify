@@ -49,7 +49,6 @@ doc_array=np.zeros((row_num,col_num),dtype=int)
 
 
 
-
 for i,j in enumerate(bow_corpus):
     for word_index,fre in j:
         doc_array[i][word_index]=fre

@@ -104,22 +104,22 @@ class keywd_tr():
 
 if __name__ == '__main__':
     # 本地连接26服务器
-    # mysql = {
-    #     "host": "117.78.60.108",
-    #     "port": "3306",
-    #     "database": "cityparlor",
-    #     "password": "123456",
-    #     "user": "es",
-    #     "charset": "utf8"
-    # }
-    # 服务器连接26服务器
     mysql = {
-        "host": "192.168.1.26",
-        "port": 3306,
+        "host": "117.78.60.108",
+        "port": "3306",
         "database": "cityparlor",
         "password": "123456",
         "user": "es",
-        "charset": "utf8"}
+        "charset": "utf8"
+    }
+    # 服务器连接26服务器
+    # mysql = {
+    #     "host": "192.168.1.26",
+    #     "port": 3306,
+    #     "database": "cityparlor",
+    #     "password": "123456",
+    #     "user": "es",
+    #     "charset": "utf8"}
 
     keywd='春运'
     model=keywd_tr(mysql_params=mysql,query_keywd=keywd)

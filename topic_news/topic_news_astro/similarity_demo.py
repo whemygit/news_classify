@@ -3,6 +3,7 @@
 import logging
 import jieba
 from gensim import corpora, models, similarities
+import six
 
 """
 主要求文章标题的相似性
@@ -10,6 +11,8 @@ similarity 方法来计算相似性
 返回值 为 False的话是相似性高的
 依赖的 python 包 有 jieba gensim 
 """
+
+
 class similarityDemo():
     def __init__(self):
         self.raw_documents = []

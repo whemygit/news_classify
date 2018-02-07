@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -- coding: utf-8 --
-from topic_news_post import get_report_id,report_news_post
 import pymysql
 
 
 
-class chunyun_topic_news():
-    def __init__(self,mysql_params,keywd,other_keywd_list=[]):
+class topic_news():
+    def __init__(self,mysql_params,keywd,area,other_keywd_list=[]):
         '''
         根据输入参数判断一条新闻是否属于设定的专题,
         使用keywd从众多新闻中筛选出标题包含keywd的新闻，缩小判定范围,原始数据可以有多种来源，此方法中是从mysql中抽取数据，从其他来源抽取需要对get_data方法稍加修改
@@ -19,6 +18,7 @@ class chunyun_topic_news():
 
         self.mysql_params=mysql_params
         self.keywd=keywd
+        self.area=area
         self.other_keywd_list=other_keywd_list
 
 
@@ -31,8 +31,8 @@ class chunyun_topic_news():
         conn=pymysql.connect(host=mysql.get('host'),port=mysql.get('port'),user=mysql.get('user'),passwd=mysql.get('password'),db=mysql.get('database'), charset=mysql.get('charset'))
         cur=conn.cursor()
         cur.execute(
-            '''SELECT id,title,content FROM t_top_news where title LIKE '%%{s}%%' AND report_id is NULL AND pics is not NULL AND create_date LIKE '%%{date}%%';'''.format(
-                s=self.keywd,date='2018'))
+            '''SELECT id,title,content FROM t_top_news where title LIKE '%%{s}%%' AND area='{area}' and report_id is NULL AND pics is not NULL AND create_date LIKE '%%{date}%%';'''.format(
+                s=self.keywd,date='2018',area=self.area))
         res_sql=cur.fetchall()
         cur.close()
         conn.close()
@@ -56,41 +56,3 @@ class chunyun_topic_news():
                 return report_flag
 
 
-# mysql_params={
-    # "host": "117.78.60.108",
-    # "port": 3306,
-    # "database": "cityparlor",
-    # "password": "123456",
-    # "user": "es",
-    # "charset": "utf8"}
-mysql_params={
-    "host": "192.168.1.26",
-    "port": 3306,
-    "database": "cityparlor",
-    "password": "123456",
-    "user": "es",
-    "charset": "utf8"}
-
-keywd='春运'                                                             #获取有可能为专题的新闻
-report_id = get_report_id('春运')                                        #获取专题id所用关键词
-other_keywd_list=['铁路','车票','出行','客流','购票','火车票','安全','运输','列车','抢票']
-
-if other_keywd_list==[]:
-    model=chunyun_topic_news(mysql_params==mysql_params,keywd=keywd)
-    for id,title,content in model.data_get():
-        print(id,title)
-        try:
-            report_news_post(news_id=id, report_id=report_id)
-            print('上传的标题为：',title)
-        except:
-            print('上传失败')
-else:
-    model=chunyun_topic_news(mysql_params=mysql_params,keywd=keywd,other_keywd_list=other_keywd_list)
-    for id,title,content in model.data_get():
-        flag=model.is_report_flag(content)
-        if flag==True:
-            try:
-                report_news_post(news_id=id, report_id=report_id)
-                print('上传的标题为：', title)
-            except:
-                print('上传失败')
