@@ -50,6 +50,44 @@ class KeyWdStat():
                 print key,value
                 fw.write(key+'\x01'+str(value)+'\n')
 
+class KeyWdFilter():
+    def __init__(self,keywd_corpus_path):
+        self.keywd_corpus_path=keywd_corpus_path
+
+    def get_keywd_dict(self):
+        keywd_file_list = os.listdir(self.keywd_corpus_path)
+        for file in keywd_file_list:
+            with open(self.keywd_corpus_path+'/'+file,'r') as fr:
+                keywd_dict={line.split('\x01')[0]:int(line.split('\x01')[1].strip()) for line in fr.readlines()}
+            yield file,keywd_dict
+
+    def get_keywd_interset(self):
+        # print len(self.get_keywd_dict())
+        keywd_list=[]
+        for file,keywd_dict in self.get_keywd_dict():
+            # print file
+            keywd_list.append(keywd_dict.keys())
+        keywd_interset=[keywd for keywd in keywd_list[0] if keywd in keywd_list[1] and keywd in keywd_list[2]]
+        # for i in keywd_interset:
+        #     print i
+        return keywd_interset
+
+
+
+
+    def get_filtered_dict(self):
+        keywd_interset=self.get_keywd_interset()
+        for file,keywd_dict in self.get_keywd_dict():
+            for keywd in keywd_interset:
+                del keywd_dict[keywd]
+            sorted_dict = sorted(keywd_dict.iteritems(), key=operator.itemgetter(1), reverse=True)
+            with open('keywd_500/'+file.split('_')[0],'w') as fw:
+                for k,v in sorted_dict:
+                    fw.write(k+'\x01'+str(v)+'\n')
+
+
+
+
 def fazzhanguihua_kw():
     model = KeyWdStat(file_path='keywd_500/fazhan')
     model.get_kw_final()
@@ -65,4 +103,11 @@ def minshengbaozh_kw():
 if __name__ == '__main__':
     # fazzhanguihua_kw()
     # renshidongtai_kw()
-    minshengbaozh_kw()
+    # minshengbaozh_kw()
+    model=KeyWdFilter(keywd_corpus_path='keywd_500/keywords_corpus')
+    # dicts=model.get_keywd_dict()
+    # model.get_keywd_interset()
+    # model.get_filtered_dict()
+
+    model.get_keywd_union()
+
