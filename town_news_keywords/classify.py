@@ -36,14 +36,10 @@ class Classification():
         count_dict={}
         classify_kw_dict=self.classify_kw_dict
         for k,v in classify_kw_dict.items():
-            count=0
-            for kw in v:
-                if kw in content:
-                    count+=1
+            count=len([kw for kw in v if kw in content])
             count_dict[k]=count
 
         sorted_dict=sorted(count_dict.iteritems(),key=operator.itemgetter(1),reverse=True)
-        # top_n=sorted_dict[0:1]
         return sorted_dict[0][0]
 
 

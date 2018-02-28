@@ -77,8 +77,6 @@ def company_main():
 
 
 
-
-
 if __name__ == '__main__':
     mysql = {
         "host": "117.78.60.108",

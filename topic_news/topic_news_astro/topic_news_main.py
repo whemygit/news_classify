@@ -27,10 +27,10 @@ mysql_params={
 # report_id,report_area = get_report_id('英首相')                                        #获取专题id所用关键词
 # other_keywd_list=['访华']
 
-title_keywd_list=['抓项目']
+title_keywd_list=['冬奥会']
 # keywd='英国首相'                                                             #获取有可能为专题的新闻
-report_id,report_area= get_report_id('抓项目')                                        #获取专题id所用关键词
-other_keywd_list=['促发展']
+report_id,report_area= get_report_id('冬奥会')                                        #获取专题id所用关键词
+other_keywd_list=['平昌']
 
 for keywd in title_keywd_list:
     if other_keywd_list==[]:

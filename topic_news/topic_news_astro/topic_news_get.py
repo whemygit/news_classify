@@ -31,8 +31,8 @@ class topic_news():
         conn=pymysql.connect(host=mysql.get('host'),port=mysql.get('port'),user=mysql.get('user'),passwd=mysql.get('password'),db=mysql.get('database'), charset=mysql.get('charset'))
         cur=conn.cursor()
         cur.execute(
-            '''SELECT id,title,content FROM t_top_news where title LIKE '%%{s}%%' AND area='{area}' and report_id is NULL AND pics is not NULL AND create_date LIKE '%%{date}%%';'''.format(
-                s=self.keywd,date='2018',area=self.area))
+            '''SELECT id,title,content FROM t_top_news where title LIKE '%%{s}%%' and report_id is NULL AND pics is not NULL AND create_date LIKE '%%{date}%%';'''.format(
+                s=self.keywd,date='2018'))
         res_sql=cur.fetchall()
         cur.close()
         conn.close()

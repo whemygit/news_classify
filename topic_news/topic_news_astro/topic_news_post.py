@@ -27,7 +27,7 @@ def get_report_id(keywd):
     conn = pymysql.connect(host=mysql.get('host'), port=mysql.get('port'), user=mysql.get('user'),
                            passwd=mysql.get('password'), db=mysql.get('database'), charset=mysql.get('charset'))
     cur = conn.cursor()
-    cur.execute('''SELECT id,title,area FROM t_top_report WHERE title LIKE '%%{s}%%';'''.format(s=keywd))
+    cur.execute('''SELECT id,title,area FROM t_top_report WHERE title LIKE '%%{s}%%' AND area='110100';'''.format(s=keywd))
     res_sql = cur.fetchall()
     cur.close()
     conn.close()
